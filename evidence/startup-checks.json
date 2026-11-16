@@ -1,0 +1,17 @@
+{
+  "method": "Separate actual main.py processes on Linux Xorg test display",
+  "results": [
+    {
+      "check": "normal CLI startup",
+      "result": "PASS",
+      "accounts": 0,
+      "window_found": true
+    },
+    {
+      "check": "assessment-demo CLI startup",
+      "result": "PASS",
+      "accounts": 4,
+      "window_found": true
+    }
+  ]
+}

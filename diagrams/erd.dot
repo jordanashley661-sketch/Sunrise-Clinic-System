@@ -1,0 +1,21 @@
+digraph G {graph [bgcolor="white",pad="0.20",nodesep="0.35",ranksep="0.48",fontname="Arial"]; node [shape=box,style="rounded,filled",fillcolor="#F2F5F8",color="#6A7987",fontname="Arial",fontsize=11,margin="0.16,0.12"]; edge [fontname="Arial",fontsize=9,color="#52636e",arrowsize=0.7];
+rankdir=TB;node [shape=record,style=filled,fontsize=10];
+User [label="{User|PK user_id\lusername UNIQUE\lpassword_hash\lrole, is_active\lfailed_attempts\l}"];
+Patient [label="{Patient|PK patient_id\lid_number UNIQUE\lfirst_name, last_name\lFK created_by, updated_by\l}"];
+Doctor [label="{Doctor|PK doctor_id\lFK user_id OPTIONAL UNIQUE\lfirst_name, last_name\lis_active\l}"];
+Schedule [label="{DoctorSchedule|PK schedule_id\lFK doctor_id\lday_of_week, start_time\lend_time, slot_minutes\l}"];
+Unavailable [label="{DoctorUnavailability|PK unavailability_id\lFK doctor_id\ldate, reason\l}"];
+Appointment [label="{Appointment|PK appointment_id\lFK patient_id, doctor_id\lFK created_by, updated_by\ldate, start_time, duration_minutes\lstatus\l}"];
+Visit [label="{Visit|PK visit_id\lFK appointment_id UNIQUE\lFK patient_id, clinician_id\lcomplaint, notes, diagnosis\ltreatment, follow_up_date\l}"];
+Audit [label="{AuditLog|PK audit_id\lFK user_id\laction, entity, entity_id\ltimestamp\l}"];
+User->Doctor [label="1 : 0..1"];
+User->Patient [label="creator / updater"];
+User->Audit [label="1 : many"];
+Doctor->Schedule [label="1 : many"];
+Doctor->Unavailable [label="1 : many"];
+Doctor->Appointment [label="1 : many"];
+Patient->Appointment [label="1 : many"];
+Appointment->Visit [label="1 : 0..1"];
+Patient->Visit [label="1 : many"];
+User->Visit [label="clinician",style=dashed,constraint=false];
+}

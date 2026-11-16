@@ -1,0 +1,12 @@
+digraph G {graph [bgcolor="white",pad="0.20",nodesep="0.35",ranksep="0.48",fontname="Arial"]; node [shape=box,style="rounded,filled",fillcolor="#F2F5F8",color="#6A7987",fontname="Arial",fontsize=11,margin="0.16,0.12"]; edge [fontname="Arial",fontsize=9,color="#52636e",arrowsize=0.7];
+rankdir=TB;
+reception [label="Receptionist",shape=ellipse]; clinician [label="Doctor or Nurse",shape=ellipse]; admin [label="Administrator",shape=ellipse];
+auth [label="1 Authenticate and authorise"];
+patients [label="2 Maintain patient demographics"];
+book [label="3 Validate and manage bookings"];
+visits [label="4 Record and retrieve clinical visits"];
+reports [label="5 Reports and backup"];
+u [label="D1 Users",shape=cylinder];p [label="D2 Patients",shape=cylinder];d [label="D3 Doctors, schedules and leave",shape=cylinder];a [label="D4 Appointments",shape=cylinder];v [label="D5 Visits",shape=cylinder];audit [label="D6 Action audit",shape=cylinder];
+reception->auth;clinician->auth;admin->auth;auth->u [label="check credentials"];auth->patients;auth->book;auth->visits;auth->reports;
+patients->p [label="validated details"];p->book [label="registered patient"];d->book [label="working hours and leave"];book->a [label="booking or status"];a->visits [label="checked-in appointment"];visits->v [label="clinical details"];visits->a [label="Completed"];a->reports [label="counts and daily list"];patients->audit;book->audit;visits->audit;
+}

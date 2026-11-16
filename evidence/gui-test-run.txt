@@ -1,0 +1,33 @@
+test_G01_login_all_roles_and_navigation (tests.test_ui.GuiTests.test_G01_login_all_roles_and_navigation) ... ok
+test_G02_bad_login_stays_on_login (tests.test_ui.GuiTests.test_G02_bad_login_stays_on_login) ... ok
+test_G03_register_and_edit_patient (tests.test_ui.GuiTests.test_G03_register_and_edit_patient) ... ok
+test_G04_validation_keeps_form_and_database_safe (tests.test_ui.GuiTests.test_G04_validation_keeps_form_and_database_safe) ... ok
+test_G05_booking_workflow (tests.test_ui.GuiTests.test_G05_booking_workflow) ... ok
+test_G06_stale_slot_requires_reload (tests.test_ui.GuiTests.test_G06_stale_slot_requires_reload) ... ok
+test_G07_concurrent_conflict_rejected_by_save (tests.test_ui.GuiTests.test_G07_concurrent_conflict_rejected_by_save) ... ok
+test_G08_reschedule_keeps_reason_and_updates_time (tests.test_ui.GuiTests.test_G08_reschedule_keeps_reason_and_updates_time) ... ok
+test_G09_cancel_releases_slot (tests.test_ui.GuiTests.test_G09_cancel_releases_slot) ... ok
+test_G10_checkin_visit_and_history (tests.test_ui.GuiTests.test_G10_checkin_visit_and_history) ... ok
+test_G11_invalid_visit_does_not_complete (tests.test_ui.GuiTests.test_G11_invalid_visit_does_not_complete) ... ok
+test_G12_reception_has_no_history_or_visit_controls (tests.test_ui.GuiTests.test_G12_reception_has_no_history_or_visit_controls) ... ok
+test_G13_admin_screens_render (tests.test_ui.GuiTests.test_G13_admin_screens_render) ... ok
+test_G14_schedule_and_leave_forms_save (tests.test_ui.GuiTests.test_G14_schedule_and_leave_forms_save) ... ok
+test_G15_create_user_and_doctor (tests.test_ui.GuiTests.test_G15_create_user_and_doctor) ... ok
+test_G16_report_export_and_backup_restore (tests.test_ui.GuiTests.test_G16_report_export_and_backup_restore) ... ok
+test_G17_expiry_closes_sensitive_modal (tests.test_ui.GuiTests.test_G17_expiry_closes_sensitive_modal) ... ok
+test_G18_role_change_closes_old_clinical_screen (tests.test_ui.GuiTests.test_G18_role_change_closes_old_clinical_screen) ... ok
+test_G19_restart_persistence (tests.test_ui.GuiTests.test_G19_restart_persistence) ... ok
+test_G20_invalid_refresh_keeps_previous_list (tests.test_ui.GuiTests.test_G20_invalid_refresh_keeps_previous_list) ... ok
+test_G21_form_actions_fit_at_125_percent_scaling (tests.test_ui.GuiTests.test_G21_form_actions_fit_at_125_percent_scaling) ... ok
+test_G22_first_administrator_setup (tests.test_ui.GuiTests.test_G22_first_administrator_setup) ... ok
+test_G23_no_show_controls (tests.test_ui.GuiTests.test_G23_no_show_controls) ... ok
+test_G24_manage_account_and_unlock (tests.test_ui.GuiTests.test_G24_manage_account_and_unlock) ... ok
+test_G25_edit_doctor_and_remove_leave (tests.test_ui.GuiTests.test_G25_edit_doctor_and_remove_leave) ... ok
+test_G26_summary_export_and_daily_doctor_filter (tests.test_ui.GuiTests.test_G26_summary_export_and_daily_doctor_filter) ... ok
+test_G27_nurse_can_record_checked_in_visit (tests.test_ui.GuiTests.test_G27_nurse_can_record_checked_in_visit) ... ok
+test_G28_unassigned_doctor_cannot_complete_visit (tests.test_ui.GuiTests.test_G28_unassigned_doctor_cannot_complete_visit) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 18.001s
+
+OK

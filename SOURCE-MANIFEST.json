@@ -1,0 +1,22 @@
+{
+  "algorithm": "SHA-256",
+  "files": {
+    "main.py": "58da2bea345a8f7fa770c95c4599c34f8f2084e434419e45f7d7a3d62a497757",
+    "pyproject.toml": "f340987273812cde02f639334b98dee7b7609029615a4845bf29a9194036aa18",
+    "run-assessment-demo.bat": "9e5ea3897cd0ff820fb23e7833a87d0c95b0190c7fb4213d38d79c34bf45a637",
+    "run-assessment-demo.command": "03fca34a744b2ee189afb44340d781c5c40806180d49d95f5c17cd4b07abfabd",
+    "run-demo.bat": "79799cb98cb30d8fdef50a4b05648b7e35a3a8aa8e7f2b739f3eaa783c8dbe19",
+    "run.bat": "353e90eb46a41de50cecef794aa6867a7b42daa02b8b21f3ddcac63d5c58a731",
+    "run_gui_tests.py": "6536352f21582edfd9f7754132069cfd82323222a2920f9a990c669b6c069f39",
+    "run_tests.py": "2e9798d3a07b36cc335876d8f46288ec9c10f0bc1ba24b1f264bc3a8efb04c06",
+    "sunrise/__init__.py": "f83febb92c5797979173422d59fa8ee9a3a3864ad1b5e47cd2b603f722c2fc4d",
+    "sunrise/database.py": "5e09b48e1ed0b73f2a6a6c4442c8bd0b0f19d1713dd3c2be34e077a3f096d268",
+    "sunrise/demo.py": "f3ff99bfd79a20a787b0bed49754446afabd3940b241a7958dfea9396751c89b",
+    "sunrise/security.py": "7c24ef9f8f2e0307dc17b126306a217b639b8d28527e7117173fb69f6b3c5d32",
+    "sunrise/services.py": "084ec9e1aa64767eb28a2e39e099447e836205f33e24d3d055ef2625dab4de12",
+    "sunrise/ui.py": "3a2815bdd26e67c11f964da989778866e404d3fd0afabec05a136b1257409113",
+    "tests/__init__.py": "588c1f3f22e763b17952d4eaac21bcc01150364ebb9b89753df5c8885704e183",
+    "tests/test_clinic.py": "4d1100adfec2e74378380bad31653188c05e9040da352054f4c9b47517024a5c",
+    "tests/test_ui.py": "3b2da083aadc4338abb6a1198f7f4615e05dd5dace46814379ff9aec5bf92707"
+  }
+}

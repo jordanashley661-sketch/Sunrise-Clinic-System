@@ -1,0 +1,54 @@
+test_T01_password_salt_and_verification (tests.test_clinic.ClinicTests.test_T01_password_salt_and_verification) ... ok
+test_T02_failed_login_lockout_and_admin_unlock (tests.test_clinic.ClinicTests.test_T02_failed_login_lockout_and_admin_unlock) ... ok
+test_T03_deactivation_invalidates_existing_session (tests.test_clinic.ClinicTests.test_T03_deactivation_invalidates_existing_session) ... ok
+test_T04_session_timeout (tests.test_clinic.ClinicTests.test_T04_session_timeout) ... ok
+test_T05_reception_denied_clinical_history_and_visit_write (tests.test_clinic.ClinicTests.test_T05_reception_denied_clinical_history_and_visit_write) ... ok
+test_T06_register_valid_sa_id_format (tests.test_clinic.ClinicTests.test_T06_register_valid_sa_id_format) ... ok
+test_T07_invalid_patient_inputs_do_not_save (tests.test_clinic.ClinicTests.test_T07_invalid_patient_inputs_do_not_save) ... ok
+test_T08_duplicate_id_returns_existing_number (tests.test_clinic.ClinicTests.test_T08_duplicate_id_returns_existing_number) ... ok
+test_T09_search_and_update (tests.test_clinic.ClinicTests.test_T09_search_and_update) ... ok
+test_T10_sql_injection_is_data (tests.test_clinic.ClinicTests.test_T10_sql_injection_is_data) ... ok
+test_T11_admin_doctor_schedule (tests.test_clinic.ClinicTests.test_T11_admin_doctor_schedule) ... ok
+test_T12_unavailable_day (tests.test_clinic.ClinicTests.test_T12_unavailable_day) ... ok
+test_T13_valid_booking_persists (tests.test_clinic.ClinicTests.test_T13_valid_booking_persists) ... ok
+test_T14_duplicate_doctor_slot_blocked (tests.test_clinic.ClinicTests.test_T14_duplicate_doctor_slot_blocked) ... ok
+test_T15_past_outside_hours_and_off_grid_blocked (tests.test_clinic.ClinicTests.test_T15_past_outside_hours_and_off_grid_blocked) ... ok
+test_T16_cancellation_releases_slot (tests.test_clinic.ClinicTests.test_T16_cancellation_releases_slot) ... ok
+test_T17_reschedule_preserves_original_on_conflict (tests.test_clinic.ClinicTests.test_T17_reschedule_preserves_original_on_conflict) ... ok
+test_T18_patient_cannot_overlap_across_doctors (tests.test_clinic.ClinicTests.test_T18_patient_cannot_overlap_across_doctors) ... ok
+test_T19_concurrent_booking_only_one_succeeds (tests.test_clinic.ClinicTests.test_T19_concurrent_booking_only_one_succeeds) ... ok
+test_T20_database_unique_constraint (tests.test_clinic.ClinicTests.test_T20_database_unique_constraint) ... ok
+test_T21_record_visit_completes_appointment (tests.test_clinic.ClinicTests.test_T21_record_visit_completes_appointment) ... ok
+test_T22_invalid_visit_does_not_complete_appointment (tests.test_clinic.ClinicTests.test_T22_invalid_visit_does_not_complete_appointment) ... ok
+test_T23_doctor_assignment_enforced (tests.test_clinic.ClinicTests.test_T23_doctor_assignment_enforced) ... ok
+test_T24_nurse_visit_and_history_order (tests.test_clinic.ClinicTests.test_T24_nurse_visit_and_history_order) ... ok
+test_T25_summary_counts_and_daily_export (tests.test_clinic.ClinicTests.test_T25_summary_counts_and_daily_export) ... ok
+test_T26_report_permissions (tests.test_clinic.ClinicTests.test_T26_report_permissions) ... ok
+test_T27_backup_restore_and_integrity (tests.test_clinic.ClinicTests.test_T27_backup_restore_and_integrity) ... ok
+test_T28_audit_records_changes_without_notes (tests.test_clinic.ClinicTests.test_T28_audit_records_changes_without_notes) ... ok
+test_T29_last_active_admin_protected (tests.test_clinic.ClinicTests.test_T29_last_active_admin_protected) ... ok
+test_T30_unavailability_rejects_existing_bookings (tests.test_clinic.ClinicTests.test_T30_unavailability_rejects_existing_bookings) ... ok
+test_T31_transaction_rolls_back_partial_write (tests.test_clinic.ClinicTests.test_T31_transaction_rolls_back_partial_write) ... ok
+test_T32_inactive_doctor_not_bookable (tests.test_clinic.ClinicTests.test_T32_inactive_doctor_not_bookable) ... ok
+test_T33_invalid_status_and_future_no_show (tests.test_clinic.ClinicTests.test_T33_invalid_status_and_future_no_show) ... ok
+test_T34_users_management_and_reset (tests.test_clinic.ClinicTests.test_T34_users_management_and_reset) ... ok
+test_T35_fifty_thousand_patient_search (tests.test_clinic.ClinicTests.test_T35_fifty_thousand_patient_search) ... ok
+test_T36_ten_doctors_two_hundred_appointments (tests.test_clinic.ClinicTests.test_T36_ten_doctors_two_hundred_appointments) ... ok
+test_T37_overlap_with_changed_slot_duration (tests.test_clinic.ClinicTests.test_T37_overlap_with_changed_slot_duration) ... FAIL
+test_T38_foreign_keys_enabled (tests.test_clinic.ClinicTests.test_T38_foreign_keys_enabled) ... ok
+test_T39_csv_formula_injection_escaped (tests.test_clinic.ClinicTests.test_T39_csv_formula_injection_escaped) ... ok
+test_T40_second_bootstrap_denied (tests.test_clinic.ClinicTests.test_T40_second_bootstrap_denied) ... ok
+
+======================================================================
+FAIL: test_T37_overlap_with_changed_slot_duration (tests.test_clinic.ClinicTests.test_T37_overlap_with_changed_slot_duration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a89cc24f1d2e/summative/SunriseClinic/tests/test_clinic.py", line 292, in test_T37_overlap_with_changed_slot_duration
+    with self.assertRaises(ClinicError):self.s.book(self.pid,self.did,DAY,'08:40')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ClinicError not raised
+
+----------------------------------------------------------------------
+Ran 40 tests in 8.066s
+
+FAILED (failures=1)

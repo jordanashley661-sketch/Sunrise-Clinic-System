@@ -1,0 +1,256 @@
+{
+  "run_at": "2026-11-16T15:58:22",
+  "tests_run": 55,
+  "failures": 0,
+  "errors": 0,
+  "duration_seconds": 25.838509345000148,
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "sqlite": "3.53.1",
+  "gui_tests_run": false,
+  "windows_tests_run": false,
+  "results": [
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T01_password_salt_and_verification",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T02_failed_login_lockout_and_admin_unlock",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T03_deactivation_invalidates_existing_session",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T04_session_timeout",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T05_reception_denied_clinical_history_and_visit_write",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T06_register_valid_sa_id_format",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T07_invalid_patient_inputs_do_not_save",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T08_duplicate_id_returns_existing_number",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T09_search_and_update",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T10_sql_injection_is_data",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T11_admin_doctor_schedule",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T12_unavailable_day",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T13_valid_booking_persists",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T14_duplicate_doctor_slot_blocked",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T15_past_outside_hours_and_off_grid_blocked",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T16_cancellation_releases_slot",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T17_reschedule_preserves_original_on_conflict",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T18_patient_cannot_overlap_across_doctors",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T19_concurrent_booking_only_one_succeeds",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T20_database_unique_constraint",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T21_record_visit_completes_appointment",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T22_invalid_visit_does_not_complete_appointment",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T23_doctor_assignment_enforced",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T24_nurse_visit_and_history_order",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T25_summary_counts_and_daily_export",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T26_report_permissions",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T27_backup_restore_and_integrity",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T28_audit_records_changes_without_notes",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T29_last_active_admin_protected",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T30_unavailability_rejects_existing_bookings",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T31_transaction_rolls_back_partial_write",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T32_inactive_doctor_not_bookable",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T33_invalid_status_and_future_no_show",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T34_users_management_and_reset",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T35_fifty_thousand_patient_search",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T36_ten_doctors_two_hundred_appointments",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T37_overlap_with_changed_slot_duration",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T38_foreign_keys_enabled",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T39_csv_formula_injection_escaped",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T40_second_bootstrap_denied",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T41_elapsed_no_show_is_counted",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T42_daily_doctor_filter_and_export",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T43_csv_cannot_overwrite_database",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T44_csv_failed_replacement_preserves_previous_export",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T45_locked_admin_is_not_a_recovery_account",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T46_reschedule_details_preserve_reason",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T47_demo_clock_never_applies_to_normal_mode",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T48_demo_seed_supports_same_day_consultation",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T49_future_checkin_does_not_change_booking",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T50_invalid_dates_and_empty_slots_leave_no_bookings",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T51_completed_visit_cannot_be_rescheduled",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T52_duplicate_usernames_are_case_insensitive",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T53_no_schedule_produces_no_slots",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T54_combined_fifty_thousand_patients_and_appointment_load",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_clinic.ClinicTests.test_T55_user_role_change_is_enforced_in_open_session",
+      "result": "PASS"
+    }
+  ],
+  "metrics": {
+    "patient_rows": 50001,
+    "patient_search_seconds": [
+      0.013017008000133501,
+      0.009820233000027656,
+      0.009140488999946683,
+      0.012301516000206902,
+      0.014680956999882255
+    ],
+    "patient_search_worst_seconds": 0.014680956999882255,
+    "load_doctors": 10,
+    "load_appointments": 200,
+    "daily_lookup_seconds": 0.0036978329999328707,
+    "slot_lookup_seconds": 0.0016128550000757969,
+    "combined_load": {
+      "patients": 50200,
+      "appointments": 200,
+      "doctors": 10,
+      "patient_search_seconds": 0.015953029999991486,
+      "slot_lookup_seconds": 0.001082463000102507
+    }
+  }
+}
