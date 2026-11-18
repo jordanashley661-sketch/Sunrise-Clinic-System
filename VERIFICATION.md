@@ -1,13 +1,19 @@
-# Functionality verification - 16 November 2026
+# Functionality verification - 17 November 2026
 
 ## Actual outcome
 
 - Service/database suite: **55 tests, 0 failures, 0 errors**.
-- Real Tk widget suite: **28 tests, 0 failures, 0 errors**.
-- Total: **83 passed automated checks**. Separate native entry-point startup checks are in evidence/startup-checks.json.
+- Real Tk widget suite: **30 tests, 0 failures, 0 errors**.
+- Total: **85 passed automated checks**. Separate native entry-point startup checks are in evidence/startup-checks.json.
 - Python 3.12.14; SQLite 3.53.1; Tk 9.0; Linux test environment.
 - Black formatting check and Ruff E4/E7/E9/F checks passed. These selected checks are not a complete PEP 8 audit.
-- Combined load in one database: **50,200 patients, 200 appointments, 10 doctors**. Patient search 0.015953s; slot lookup 0.001082s. Both below the two-second target in this environment.
+- Combined load in one database: **50,200 patients, 200 appointments, 10 doctors**. Patient search 0.009643s; slot lookup 0.000737s. Both below the two-second target in this environment.
+
+## Visual update on 17 November
+
+The supplied mockups were adapted to the existing staff app: teal split login, sidebar, rounded panels, real daily counts, account identity and role-specific quick actions. No service or database rules changed. G29 checks password visibility without changing its value. G30 checks the refreshed dashboard status, navigation and a registration action at a 1000 x 720 window size. The original 28 GUI workflows still pass.
+
+The student reported core Mac workflows on 16 November using the previous appearance. Those outcomes are not presented as native-Mac approval of this redesign. Test the new appearance on the Mac before submitting it. The patient-portal mockup supplies visual direction only; patient accounts and insurance functions have not been added.
 
 ## What changed
 
@@ -61,8 +67,8 @@ Initial GUI test failures were test-driver mistakes: a label mismatch and an amb
 - No Windows executable is included. The brief requires a compiled version where applicable; Python source is supplied with launchers and optional Windows packaging instructions.
 - Real staff task times, complete keyboard-only access, screen readers, physical mouse/keyboard input and 15 minutes of actual elapsed inactivity remain manual checks.
 - Automatic daily backup is not implemented; the original manual-backup functional requirement is implemented. SQLite files and exports are not encrypted. This is a local coursework prototype, not a production clinical system.
-- A real GitHub repository accessible to the assessor is mandatory under the supplied brief. It has not been created or published. See REPOSITORY-SETUP.md.
-- Update the existing final report's older 42-test figures, Linux GUI limitations and screenshots using this evidence. Keep native OS and human acceptance checks pending until actually performed. Submit the final report as PDF and include source-code.pdf.
+- The student supplied the GitHub URL in START-HERE.md and reported uploading it. Its current contents and assessor access are not independently verified; update it with this build after local review.
+- The accompanying report has been updated with this build and screen evidence. Review it and export the final report to PDF; include source-code.pdf. Native OS and human acceptance checks remain distinct from automated results.
 - Complete the personal reflection after reviewing and running the code. Do not invent formative feedback; none was supplied for this build.
 - The brief permits AI as a learning aid, with substantive use acknowledged and reviewed by the student. This package records AI assistance. Review and understand the submitted code yourself.
 

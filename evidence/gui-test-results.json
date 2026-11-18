@@ -1,14 +1,139 @@
 {
-  "run_at": "2026-11-16T15:58:17",
-  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
-  "python": "3.12.14",
+  "run_at": "2026-11-17T20:47:34+02:00",
+  "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+  "python": "3.15.2",
   "tk": "9.0",
-  "tests_run": 28,
+  "tests_expected": 30,
+  "tests_run": 30,
+  "passed": 30,
   "failures": 0,
   "errors": 0,
+  "status": "PASS",
   "fixture_clock": "2030-01-07 08:00 (simulated; not real clinic data)",
-  "method": "Real Tk widgets and SQLite; button.invoke; message/file dialogs intercepted",
-  "limits": "Linux test display; not Windows/macOS, staff usability or physical mouse/keyboard testing",
-  "screenshots": true,
+  "method": "One subprocess per real Tk case; real SQLite; button.invoke; message/file dialogs intercepted",
+  "limits": "Records this machine only; not staff acceptance, physical input or full accessibility testing",
+  "screenshots": false,
+  "cases": [
+    {
+      "test": "tests.test_ui.GuiTests.test_G01_login_all_roles_and_navigation",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G02_bad_login_stays_on_login",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G03_register_and_edit_patient",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G04_validation_keeps_form_and_database_safe",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G05_booking_workflow",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G06_stale_slot_requires_reload",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G07_concurrent_conflict_rejected_by_save",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G08_reschedule_keeps_reason_and_updates_time",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G09_cancel_releases_slot",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G10_checkin_visit_and_history",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G11_invalid_visit_does_not_complete",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G12_reception_has_no_history_or_visit_controls",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G13_admin_screens_render",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G14_schedule_and_leave_forms_save",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G15_create_user_and_doctor",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G16_report_export_and_backup_restore",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G17_expiry_closes_sensitive_modal",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G18_role_change_closes_old_clinical_screen",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G19_restart_persistence",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G20_invalid_refresh_keeps_previous_list",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G21_form_actions_fit_at_125_percent_scaling",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G22_first_administrator_setup",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G23_no_show_controls",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G24_manage_account_and_unlock",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G25_edit_doctor_and_remove_leave",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G26_summary_export_and_daily_doctor_filter",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G27_nurse_can_record_checked_in_visit",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G28_unassigned_doctor_cannot_complete_visit",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G29_password_visibility_toggle",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G30_overview_status_refresh_and_small_window_navigation",
+      "result": "PASS"
+    }
+  ],
   "issues": []
 }

@@ -1,12 +1,12 @@
 {
-  "run_at": "2026-11-16T15:58:22",
+  "run_at": "2026-11-17T20:08:56",
   "tests_run": 55,
   "failures": 0,
   "errors": 0,
-  "duration_seconds": 25.838509345000148,
-  "python": "3.12.14",
-  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
-  "sqlite": "3.53.1",
+  "duration_seconds": 17.987309749994893,
+  "python": "3.15.2",
+  "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+  "sqlite": "3.53.4",
   "gui_tests_run": false,
   "windows_tests_run": false,
   "results": [
@@ -234,23 +234,23 @@
   "metrics": {
     "patient_rows": 50001,
     "patient_search_seconds": [
-      0.013017008000133501,
-      0.009820233000027656,
-      0.009140488999946683,
-      0.012301516000206902,
-      0.014680956999882255
+      0.009922290999384131,
+      0.009772249999514315,
+      0.008278291003080085,
+      0.00920754099934129,
+      0.012347832998784725
     ],
-    "patient_search_worst_seconds": 0.014680956999882255,
+    "patient_search_worst_seconds": 0.012347832998784725,
     "load_doctors": 10,
     "load_appointments": 200,
-    "daily_lookup_seconds": 0.0036978329999328707,
-    "slot_lookup_seconds": 0.0016128550000757969,
+    "daily_lookup_seconds": 0.01165016699815169,
+    "slot_lookup_seconds": 0.007786292000673711,
     "combined_load": {
       "patients": 50200,
       "appointments": 200,
       "doctors": 10,
-      "patient_search_seconds": 0.015953029999991486,
-      "slot_lookup_seconds": 0.001082463000102507
+      "patient_search_seconds": 0.06451666700013448,
+      "slot_lookup_seconds": 0.009217333004926331
     }
   }
 }

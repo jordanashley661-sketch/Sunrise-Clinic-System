@@ -37,9 +37,9 @@ The simulated date is only for repeatable demonstration. To use an empty databas
 ## 4. Evidence and submission
 
 - `evidence/test-results.json`: 55 service/database checks.
-- `evidence/gui-test-results.json`: 28 Tk screen checks.
+- `evidence/gui-test-results.json`: 30 Tk screen checks.
 - `evidence/screenshots/`: actual rendered test screens, not design mockups.
 - `source-code.pdf`: complete updated source listing.
 - `VERIFICATION.md`: what was checked and what remains.
 
-The GitHub repository is still to be created/uploaded and made accessible to the assessor. Add its real URL to the final report. The report must also be updated from its older 42-test results to the new results and screenshots. Your own reflection and local machine check remain yours to complete.
+The student supplied https://github.com/jordanashley661-sketch/Sunrise-Clinic-System and reported uploading the project. Replace its files with this redesigned build after checking it on your Mac. Confirm assessor access and keep local databases out of GitHub. The accompanying report now records 85 automated checks and the new screen evidence. Review the report, personal details and reflection before exporting it to PDF.

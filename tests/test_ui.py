@@ -90,6 +90,18 @@ class GuiTests(unittest.TestCase):
         self.root.update()
 
     def field(self, label, value=None, parent=None):
+        for widget in descendants(parent or self.root):
+            if getattr(widget, "_field_label", None) == label:
+                if value is not None:
+                    if isinstance(widget, ttk.Combobox):
+                        widget.set(value)
+                    elif isinstance(widget, tk.Text):
+                        widget.delete("1.0", "end")
+                        widget.insert("1.0", value)
+                    else:
+                        widget.delete(0, "end")
+                        widget.insert(0, value)
+                return widget
         for w in descendants(parent or self.root):
             if isinstance(w, ttk.Label) and w.cget("text") == label:
                 info = w.grid_info()
@@ -543,4 +555,36 @@ class GuiTests(unittest.TestCase):
         self.field("Presenting complaint", "Blocked example")
         self.click("Save visit and complete appointment")
         self.assertIn("only for their own", self.messages[-1][2])
+        self.assertEqual(self.s.appointments(DAY)[0]["status"], "Checked-in")
+
+    def test_G29_password_visibility_toggle(self):
+        entry = self.field("Passphrase (15–128 characters)", "FictionalPassword")
+        self.assertNotEqual(str(entry.cget("show")), "")
+        self.click("Show")
+        self.assertEqual(str(entry.cget("show")), "")
+        self.assertEqual(entry.get(), "FictionalPassword")
+        self.click("Hide")
+        self.assertNotEqual(str(entry.cget("show")), "")
+        self.assertEqual(entry.get(), "FictionalPassword")
+
+    def test_G30_overview_status_refresh_and_small_window_navigation(self):
+        self.login("reception")
+        self.s.set_status(1, "Checked-in")
+        self.click("Home")
+        labels = [
+            w.cget("text")
+            for w in descendants(self.app.content)
+            if isinstance(w, tk.Label)
+        ]
+        self.assertIn("Demo Mokoena  ·  Checked-in", labels)
+        self.assertIn("Demo Receptionist", labels)
+        self.root.geometry("1000x720")
+        self.root.update()
+        self.click("View appointments")
+        self.assertEqual(self.app.breadcrumb.get(), "Staff workspace  /  Appointments")
+        self.assertEqual(self.s.appointments(DAY)[0]["status"], "Checked-in")
+        self.click("Home")
+        self.click("Register a patient")
+        self.assertTrue(self.field("First name").winfo_ismapped())
+        self.click("Close")
         self.assertEqual(self.s.appointments(DAY)[0]["status"], "Checked-in")
