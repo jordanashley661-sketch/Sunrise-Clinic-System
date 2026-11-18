@@ -55,6 +55,6 @@ test_T54_combined_fifty_thousand_patients_and_appointment_load (tests.test_clini
 test_T55_user_role_change_is_enforced_in_open_session (tests.test_clinic.ClinicTests.test_T55_user_role_change_is_enforced_in_open_session) ... ok
 
 ----------------------------------------------------------------------
-Ran 55 tests in 25.838s
+Ran 55 tests in 17.978s
 
 OK

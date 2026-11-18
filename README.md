@@ -4,9 +4,9 @@ Offline appointment and patient records coursework prototype for Ashley Jordan F
 
 **Use fictional data only. This is not a production medical record system.** Application role checks do not protect a database file from someone who has operating-system access. Databases, backups and CSV exports are not encrypted by this prototype.
 
-## Updated assessment build - 16 November 2026
+## Updated assessment build - 17 November 2026
 
-Start with **START-HERE.md**. This build includes 55 service/database checks and 28 real Tk widget checks, saved results and screenshots. See **VERIFICATION.md** for the actual results and limits.
+Start with **START-HERE.md**. This build includes 55 service/database checks and 30 real Tk widget checks, saved results and screenshots. See **VERIFICATION.md** for the actual results and limits.
 
 For a repeatable assessment walkthrough, use `run-assessment-demo.bat` (Windows), `run-assessment-demo.command` (Mac), or:
 
@@ -15,6 +15,12 @@ python3 main.py --demo --demo-date 2030-01-07
 ```
 
 This visibly labelled demonstration uses a **simulated 7 January 2030, 08:00 application clock** and a separate `demo-2030-01-07.sqlite` file. It lets reception check in the seeded 09:00 appointment and a doctor record its visit in the same session. It does not change your computer clock. The normal app never accepts `--demo-date`. Use fictional data only. Later re-runs keep saved changes; to repeat from the beginning, use a new `--data-dir` folder rather than overwrite a database.
+
+## Teal interface update
+
+The 17 November build adapts the supplied Sunrise mockups to the existing staff system. It adds a split login, sidebar navigation, mint welcome banner, live appointment counts and role-specific quick actions. `sunrise/theme.py` holds the teal palette, Arial typography, rounded cards and vector clinic illustration. No new runtime dependency is required. The reference patient dashboard is a visual guide; patient self-service and medical-insurance storage are outside this staff prototype.
+
+Extract the new project as a complete folder. Its database schema and normal data directory are unchanged, so the same demonstration data remains available. Do not delete the existing database to change the appearance. Check the redesigned screens on your Mac before replacing the submitted GitHub files.
 
 ## Start on Windows
 
@@ -34,7 +40,7 @@ Install a Python build with Tk support, extract the ZIP, open Terminal in this f
 python3 main.py --demo
 ```
 
-On Linux, Tk may require a distribution package such as `python3-tk`. On macOS, the python.org installer normally includes Tk. Service tests and real Tk widget tests have passed on Linux, including a virtual Xorg display. Native macOS and Windows behaviour remains to be checked.
+On Linux, Tk may require a distribution package such as `python3-tk`. On macOS, the python.org installer normally includes Tk. Service tests and real Tk widget tests have passed on Linux, including a virtual Xorg display. The student reported the core workflow working on a Mac on 16 November, before this visual update. The redesigned screens have been checked on Linux; native Mac appearance and Windows behaviour still need checking.
 
 ## First demonstration
 

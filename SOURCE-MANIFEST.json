@@ -14,9 +14,10 @@
     "sunrise/demo.py": "f3ff99bfd79a20a787b0bed49754446afabd3940b241a7958dfea9396751c89b",
     "sunrise/security.py": "7c24ef9f8f2e0307dc17b126306a217b639b8d28527e7117173fb69f6b3c5d32",
     "sunrise/services.py": "084ec9e1aa64767eb28a2e39e099447e836205f33e24d3d055ef2625dab4de12",
-    "sunrise/ui.py": "3a2815bdd26e67c11f964da989778866e404d3fd0afabec05a136b1257409113",
+    "sunrise/theme.py": "730baa0a9232ca46769839a74212f19cb289e5f0dad89c585530a5979569b5b0",
+    "sunrise/ui.py": "7365f9698a46a6a673408915dbebe77b4d3739e539009b4b4d228df73ea7868e",
     "tests/__init__.py": "588c1f3f22e763b17952d4eaac21bcc01150364ebb9b89753df5c8885704e183",
     "tests/test_clinic.py": "4d1100adfec2e74378380bad31653188c05e9040da352054f4c9b47517024a5c",
-    "tests/test_ui.py": "3b2da083aadc4338abb6a1198f7f4615e05dd5dace46814379ff9aec5bf92707"
+    "tests/test_ui.py": "a36af62af61d4514f178f7766a5d7846f83cff27edb5c09c5b21a1d1662fff58"
   }
 }

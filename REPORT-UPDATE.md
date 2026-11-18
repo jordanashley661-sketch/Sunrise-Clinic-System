@@ -4,11 +4,11 @@ Use this information to update the earlier report. It does not replace your own 
 
 ## Implementation and testing update
 
-The prototype was revised and tested again on 16 November 2026. The updated service/database suite passed all 55 tests. A separate suite passed 28 real Tk widget tests, giving 83 passing automated checks in total. The screen tests covered login, patient registration and edits, appointments, conflict handling, check-in, visits, history, doctor schedules, user management, reports, export and backup. They also checked session expiry and closure of a sensitive dialog after a role change.
+The prototype was revised and tested again on 17 November 2026. The updated service/database suite passed all 55 tests. A separate suite passed 30 real Tk widget tests, giving 85 passing automated checks in total. The screen tests covered login, patient registration and edits, appointments, conflict handling, check-in, visits, history, doctor schedules, user management, reports, export and backup. They also checked session expiry and closure of a sensitive dialog after a role change.
 
-The tests ran on Linux using Python 3.12.14, SQLite 3.53.1 and Tk 9.0. The graphical tests used an Xorg test display. They filled real widgets and invoked real buttons. Message boxes and file pickers were intercepted for unattended testing. These are automated screen checks, not manual staff acceptance tests. Windows and Mac checks remain outstanding.
+The tests ran on Linux using Python 3.12.14, SQLite 3.53.1 and Tk 9.0. The graphical tests used an Xorg test display. They filled real widgets and invoked real buttons. Message boxes and file pickers were intercepted for unattended testing. These are automated screen checks, not manual staff acceptance tests. The student reported core Mac workflows on 16 November before the visual update. Native Mac review of the redesigned screens and Windows checks remain outstanding.
 
-The combined load test used 50,200 fictional patients, 200 appointments and 10 doctors in the same database. Patient search took 0.015953 seconds and slot lookup took 0.001082 seconds. Both met the two-second target in the recorded test environment. These figures do not establish performance on the intended clinic computer.
+The combined load test used 50,200 fictional patients, 200 appointments and 10 doctors in the same database. Patient search took 0.009643 seconds and slot lookup took 0.000737 seconds. Both met the two-second target in the recorded test environment. These figures do not establish performance on the intended clinic computer.
 
 Black formatting and selected Ruff correctness/style checks passed. A full PEP 8 assessment was not performed. The new source-code.pdf lists the updated source, and VERIFICATION.md maps the original functional requirements to test evidence.
 
@@ -36,4 +36,8 @@ ChatGPT assisted with revising the prototype, preparing tests, capturing automat
 
 ## Submission correction
 
-The supplied brief explicitly requires an assessor-accessible GitHub repository and a final technical report in PDF. These are not optional. Add the actual repository URL after it has been created. No live demonstration is required by the brief. A compiled version is requested where applicable; native Windows packaging remains unverified.
+The supplied brief explicitly requires an assessor-accessible GitHub repository and a final technical report in PDF. These are not optional. The student supplied https://github.com/jordanashley661-sketch/Sunrise-Clinic-System and reported uploading it; confirm its current contents and assessor access. No live demonstration is required by the brief. A compiled version is requested where applicable; native Windows packaging remains unverified.
+
+## Teal interface update
+
+The 17 November build uses the supplied visual direction for the existing staff system. The login, sidebar and dashboard were redesigned; forms retain their original operations. G29 checks the password visibility toggle and G30 checks dashboard refresh, navigation and a 1000 x 720 window. There are 55 service/database cases and 30 real Tk cases, all passing. Source PDF, manifest and screenshots match this build. No patient self-service or medical insurance feature is claimed.

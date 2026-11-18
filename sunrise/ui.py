@@ -5,6 +5,21 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 
 from .services import AccessDenied, ClinicError, PATIENT_FIELDS, ROLES
+from .theme import (
+    BG,
+    FONT,
+    LINE,
+    MUTED,
+    PALE,
+    TEAL,
+    WHITE,
+    Panel,
+    brand,
+    configure_theme,
+    draw_login_art,
+    label,
+    rounded,
+)
 
 LABELS = {
     "first_name": "First name",
@@ -43,17 +58,10 @@ class ClinicApp:
     def __init__(self, root, service, demo=False):
         self.root, self.service, self.demo = root, service, demo
         root.title("Sunrise Community Clinic — coursework prototype")
-        root.geometry("1160x780")
-        root.minsize(980, 680)
+        root.geometry("1240x820")
+        root.minsize(1000, 720)
         self.session_role = None
-        style = ttk.Style(root)
-        style.theme_use("clam")
-        style.configure(".", font=("Arial", 11))
-        style.configure("TButton", padding=(10, 7))
-        style.configure("Treeview", rowheight=29)
-        style.configure("Treeview.Heading", font=("Arial", 10, "bold"))
-        style.configure("Title.TLabel", font=("Arial", 21, "bold"))
-        style.configure("Small.TLabel", font=("Arial", 10), foreground="#52636e")
+        configure_theme(root)
         self.last_touch = 0
         root.bind_all("<KeyPress>", self.activity, add="+")
         root.bind_all("<ButtonPress>", self.activity, add="+")
@@ -122,39 +130,106 @@ class ClinicApp:
             child.destroy()
 
     def button(self, parent, text, callback):
-        b = ttk.Button(parent, text=text, command=self.guarded(callback))
+        primary = text.startswith(("Save", "Create", "Book", "Export")) or text in (
+            "Check in",
+            "Search",
+        )
+        b = ttk.Button(
+            parent,
+            text=text,
+            style="Primary.TButton" if primary else "TButton",
+            command=self.guarded(callback),
+        )
         b.pack(side="left", padx=(0, 8), pady=6)
         return b
 
     def login_screen(self):
         self.clear()
-        outer = ttk.Frame(self.root, padding=40)
-        outer.pack(expand=True)
-        ttk.Label(outer, text="Sunrise Community Clinic", style="Title.TLabel").pack(
-            anchor="w", pady=12
-        )
-        ttk.Label(
-            outer,
-            text="Offline appointment and patient records prototype",
-            style="Small.TLabel",
-        ).pack(anchor="w", pady=4)
-        if self.demo:
-            ttk.Label(
-                outer,
-                text="DEMONSTRATION DATABASE — synthetic data only",
-                foreground="#9c4d00",
-            ).pack(anchor="w", pady=6)
         self.session_role = None
-        setup = self.service.needs_setup()
-        ttk.Label(
-            outer, text="Create the first administrator" if setup else "Staff login"
-        ).pack(anchor="w", pady=10)
-        frame = ttk.Frame(outer)
-        frame.pack(fill="x")
-        fields = (
-            ["username", "full_name", "password"] if setup else ["username", "password"]
+        self.nav_buttons = {}
+        self.root.configure(background=WHITE)
+        outer = tk.Frame(self.root, bg=WHITE)
+        outer.pack(fill="both", expand=True)
+        outer.columnconfigure(0, weight=53, uniform="login")
+        outer.columnconfigure(1, weight=47, uniform="login")
+        outer.rowconfigure(0, weight=1)
+        art = tk.Canvas(outer, highlightthickness=0, background="#ECF6F3")
+        art.grid(row=0, column=0, sticky="nsew")
+        art.bind("<Configure>", lambda event: draw_login_art(art))
+        right = tk.Frame(outer, bg=WHITE)
+        right.grid(row=0, column=1, sticky="nsew")
+        label(right, "Staff access only", 9, color=MUTED).place(
+            relx=1, x=-30, y=24, anchor="ne"
         )
-        inputs = self.fields(frame, fields)
+        form = tk.Frame(right, bg=WHITE)
+        form.place(relx=0.5, rely=0.48, anchor="center", relwidth=0.76)
+        lock = tk.Canvas(form, width=40, height=40, bg=WHITE, highlightthickness=0)
+        lock.pack(anchor="w", pady=(0, 18))
+        rounded(lock, 0, 0, 40, 40, 12, fill=PALE, outline="")
+        lock.create_arc(
+            14, 10, 26, 25, start=0, extent=180, style="arc", outline=TEAL, width=1.5
+        )
+        lock.create_rectangle(13, 18, 27, 30, outline=TEAL, width=1.5)
+        label(form, "WELCOME TO SUNRISE", 8, color=TEAL, bold=True).pack(
+            anchor="w", pady=(0, 8)
+        )
+        setup = self.service.needs_setup()
+        label(
+            form,
+            "Create your workspace" if setup else "Sign in to your workspace",
+            22,
+            bold=True,
+        ).pack(anchor="w")
+        label(
+            form,
+            (
+                "Create the first administrator."
+                if setup
+                else "Enter your staff details to get started."
+            ),
+            10,
+            color=MUTED,
+        ).pack(anchor="w", pady=(10, 24))
+        inputs = {}
+        for name in (
+            ["username", "full_name", "password"] if setup else ["username", "password"]
+        ):
+            label(
+                form,
+                {
+                    "username": "Username",
+                    "full_name": "Full name",
+                    "password": "Password",
+                }[name],
+                10,
+                bold=True,
+            ).pack(anchor="w", pady=(0, 7))
+            border = tk.Frame(
+                form,
+                bg=WHITE,
+                highlightbackground=LINE,
+                highlightcolor=TEAL,
+                highlightthickness=1,
+            )
+            border.pack(fill="x", pady=(0, 16))
+            border.columnconfigure(0, weight=1)
+            entry = ttk.Entry(
+                border, style="Login.TEntry", show="*" if name == "password" else ""
+            )
+            entry._field_label = LABELS[name]
+            entry.grid(row=0, column=0, sticky="ew")
+            inputs[name] = entry
+            if name == "password":
+
+                def toggle():
+                    visible = bool(inputs["password"].cget("show"))
+                    inputs["password"].configure(show="" if visible else "*")
+                    show.configure(text="Hide" if visible else "Show")
+
+                show = ttk.Button(
+                    border, text="Show", style="Link.TButton", command=toggle
+                )
+                show.grid(row=0, column=1, padx=(0, 6))
 
         def submit():
             data = self.values(inputs)
@@ -165,25 +240,39 @@ class ClinicApp:
             self.service.login(data["username"], data["password"])
             self.shell()
 
-        bar = ttk.Frame(outer)
-        bar.pack(fill="x")
-        login_button = self.button(
-            bar, "Create administrator and log in" if setup else "Log in", submit
+        login_button = ttk.Button(
+            form,
+            text="Create administrator and log in" if setup else "Log in",
+            style="Primary.TButton",
+            command=self.guarded(submit),
         )
+        login_button.pack(fill="x", pady=(5, 18))
         for entry in inputs.values():
             entry.bind("<Return>", lambda event: login_button.invoke())
+        label(form, "Having trouble signing in?", 9, color=MUTED).pack(anchor="center")
+        label(form, "Contact your clinic administrator.", 9, bold=True).pack(
+            anchor="center", pady=(5, 18)
+        )
+        tk.Frame(form, bg=LINE, height=1).pack(fill="x", pady=(0, 14))
+        label(
+            form,
+            "Your role determines what you can access.\nSessions end after 15 minutes of inactivity.",
+            9,
+            color=MUTED,
+        ).pack(anchor="w")
         if self.demo:
-            ttk.Label(
-                outer,
-                text="Users: admin / reception / doctor / nurse\nDemo passphrase for all: SunriseDemo!2026",
-                style="Small.TLabel",
-            ).pack(anchor="w", pady=10)
-        ttk.Label(
-            outer,
-            text="Data file: " + str(self.service.db.path),
-            style="Small.TLabel",
-            wraplength=650,
-        ).pack(anchor="w", pady=12)
+            label(
+                form, "DEMO ACCOUNTS  ·  FICTIONAL DATA ONLY", 8, color=TEAL, bold=True
+            ).pack(anchor="w", pady=(18, 5))
+            label(
+                form,
+                "admin / reception / doctor / nurse\nPassword: SunriseDemo!2026",
+                9,
+                color=MUTED,
+            ).pack(anchor="w")
+        label(
+            right, "Sunrise Community Clinic  ·  Staff workspace", 8, color=MUTED
+        ).place(relx=0.5, rely=1, y=-24, anchor="s")
         inputs["username"].focus_set()
 
     def fields(self, parent, names, defaults=None, choices=None, multiline=()):
@@ -214,6 +303,7 @@ class ClinicApp:
                 )
                 entry.insert(0, str(defaults.get(name, "") or ""))
             entry.grid(row=row, column=1, sticky="ew", pady=5)
+            entry._field_label = LABELS.get(name, name.replace("_", " ").capitalize())
             fields[name] = entry
         parent.columnconfigure(1, weight=1)
         return fields
@@ -228,64 +318,163 @@ class ClinicApp:
         window = tk.Toplevel(self.root)
         window.title(title)
         window.transient(self.root)
-        window.geometry("800x690")
-        window.minsize(720, 620)
-        frame = ttk.Frame(window, padding=18)
+        window.geometry("850x780")
+        window.minsize(760, 720)
+        window.configure(background=WHITE)
+        heading = tk.Frame(window, bg=PALE)
+        heading.pack(fill="x")
+        label(heading, title, 16, bold=True).pack(anchor="w", padx=22, pady=17)
+        frame = ttk.Frame(window, padding=22)
         frame.pack(fill="both", expand=True)
         window.grab_set()
         return window, frame
 
     def shell(self):
         self.clear()
-        top = ttk.Frame(self.root, padding=(18, 12))
-        top.pack(fill="x")
+        self.root.configure(background=BG)
         user = self.service.user
         self.session_role = user["role"]
-        ttk.Label(top, text="Sunrise Community Clinic", style="Title.TLabel").pack(
-            side="left"
+        self.nav_buttons = {}
+        sidebar = tk.Frame(
+            self.root,
+            bg=WHITE,
+            width=220,
+            highlightbackground=LINE,
+            highlightthickness=1,
         )
-        ttk.Label(top, text=f"{user['full_name']}  |  {user['role']}").pack(
-            side="right"
+        sidebar.pack(side="left", fill="y")
+        sidebar.pack_propagate(False)
+        brand(sidebar).pack(anchor="w", padx=22, pady=(28, 28))
+        label(sidebar, "STAFF WORKSPACE", 8, color=MUTED, bold=True).pack(
+            anchor="w", padx=25, pady=(0, 12)
         )
-        nav = ttk.Frame(self.root, padding=(18, 0))
-        nav.pack(fill="x")
-        self.button(nav, "Home", self.home)
+        links = [("Home", self.home)]
         if user["role"] in ("Receptionist", "Doctor", "Nurse"):
-            self.button(nav, "Patients", self.patients_screen)
-        self.button(nav, "Appointments", self.appointments_screen)
+            links.append(("Patients", self.patients_screen))
+        links.append(("Appointments", self.appointments_screen))
         if user["role"] == "Admin":
-            self.button(nav, "Doctors and schedules", self.doctors_screen)
-            self.button(nav, "Users", self.users_screen)
-            self.button(nav, "Reports", self.reports_screen)
-            self.button(nav, "Audit and backup", self.audit_screen)
-        self.button(
-            nav, "Log out", lambda: (self.service.logout(), self.login_screen())
+            links.extend(
+                [
+                    ("Doctors and schedules", self.doctors_screen),
+                    ("Users", self.users_screen),
+                    ("Reports", self.reports_screen),
+                    ("Audit and backup", self.audit_screen),
+                ]
+            )
+        for text, callback in links:
+            b = ttk.Button(
+                sidebar,
+                text=text,
+                style="Nav.TButton",
+                command=self.guarded(
+                    lambda key=text, fn=callback: self.navigate(key, fn)
+                ),
+            )
+            b.pack(fill="x", padx=16, pady=3)
+            self.nav_buttons[text] = b
+        ttk.Button(
+            sidebar,
+            text="Log out",
+            style="Nav.TButton",
+            command=self.guarded(lambda: (self.service.logout(), self.login_screen())),
+        ).pack(side="bottom", fill="x", padx=16, pady=(10, 20))
+        note = tk.Frame(sidebar, bg="#F1F8F5")
+        note.pack(side="bottom", fill="x", padx=20, pady=(12, 4))
+        label(note, "Your care, in one place.", 10, bold=True).pack(
+            anchor="w", padx=14, pady=(16, 8)
+        )
+        label(
+            note,
+            "Keep information up to date\nfor a smoother clinic visit.",
+            9,
+            color=MUTED,
+        ).pack(anchor="w", padx=14, pady=(0, 16))
+        main = tk.Frame(self.root, bg=BG)
+        main.pack(side="left", fill="both", expand=True)
+        top = tk.Frame(
+            main, bg=WHITE, height=76, highlightbackground=LINE, highlightthickness=1
+        )
+        top.pack(fill="x")
+        top.pack_propagate(False)
+        self.breadcrumb = tk.StringVar(value="Staff workspace  /  My overview")
+        label(top, "", 10, color=MUTED, textvariable=self.breadcrumb).pack(
+            side="left", padx=28
+        )
+        who = tk.Frame(top, bg=WHITE)
+        who.pack(side="right", padx=24)
+        avatar = tk.Canvas(who, width=38, height=38, bg=WHITE, highlightthickness=0)
+        avatar.pack(side="left", padx=(0, 10))
+        avatar.create_oval(1, 1, 37, 37, fill=PALE, outline="")
+        initials = "".join(s[0] for s in user["full_name"].split()[:2]).upper()
+        avatar.create_text(19, 19, text=initials, fill=TEAL, font=(FONT, 10, "bold"))
+        details = tk.Frame(who, bg=WHITE)
+        details.pack(side="left")
+        label(details, user["full_name"], 10, bold=True).pack(anchor="w")
+        label(details, user["role"] + "  ·  Staff account", 8, color=MUTED).pack(
+            anchor="w", pady=(3, 0)
         )
         if self.demo:
-            clock_label = getattr(self.service, "demo_clock_label", "Live system clock")
-            ttk.Label(
-                self.root,
-                text="DEMO — fictional data only | " + clock_label,
-                foreground="#9c4d00",
-                padding=(18, 5),
-            ).pack(fill="x")
-        self.content = ttk.Frame(self.root, padding=18)
+            demo_text = "DEMO · Fictional records only  |  " + getattr(
+                self.service, "demo_clock_label", "Live system clock"
+            )
+            strip = tk.Label(
+                main,
+                text=demo_text,
+                font=(FONT, 8),
+                fg="#8A6D2B",
+                bg="#FFF9EC",
+                anchor="w",
+                padx=28,
+                pady=7,
+                justify="left",
+            )
+            strip.pack(fill="x")
+            strip.bind(
+                "<Configure>",
+                lambda event: strip.configure(wraplength=max(180, event.width - 56)),
+            )
+        self.content = ttk.Frame(main, style="Workspace.TFrame", padding=(26, 24))
         self.content.pack(fill="both", expand=True)
         self.home()
+
+    def navigate(self, key, callback):
+        self.set_navigation(key)
+        callback()
+
+    def set_navigation(self, key):
+        for text, b in getattr(self, "nav_buttons", {}).items():
+            b.configure(style="Selected.Nav.TButton" if text == key else "Nav.TButton")
+        if hasattr(self, "breadcrumb"):
+            self.breadcrumb.set(
+                "Staff workspace  /  " + ("My overview" if key == "Home" else key)
+            )
 
     def page(self, title, description=""):
         for child in self.content.winfo_children():
             child.destroy()
-        ttk.Label(self.content, text=title, style="Title.TLabel").pack(
+        key = {
+            "Patient directory": "Patients",
+            "Daily appointments": "Appointments",
+            "Staff accounts": "Users",
+            "Appointment reports": "Reports",
+            "Doctors and availability": "Doctors and schedules",
+            "Audit and database backup": "Audit and backup",
+        }.get(title, "Home")
+        self.set_navigation(key)
+        ttk.Label(self.content, text=title, style="PageTitle.TLabel").pack(
             anchor="w", pady=(0, 8)
         )
         if description:
-            ttk.Label(
-                self.content, text=description, wraplength=1050, style="Small.TLabel"
-            ).pack(anchor="w", pady=(0, 10))
-        frame = ttk.Frame(self.content)
-        frame.pack(fill="both", expand=True)
-        return frame
+            info = ttk.Label(
+                self.content,
+                text=description,
+                style="PageSmall.TLabel",
+                wraplength=max(600, self.root.winfo_width() - 330),
+            )
+            info.pack(anchor="w", pady=(0, 18))
+        panel = Panel(self.content, padding=18, stretch=True)
+        panel.pack(fill="both", expand=True)
+        return panel.body
 
     def tree(self, parent, columns, rows):
         frame = ttk.Frame(parent)
@@ -304,13 +493,15 @@ class ClinicApp:
         x.grid(row=1, column=0, sticky="ew")
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
-        for row in rows:
+        tree.tag_configure("even", background="#F6FAF8")
+        for index, row in enumerate(rows):
             tree.insert(
                 "",
                 "end",
                 values=[
                     row.get(c, "") if row.get(c) is not None else "" for c in columns
                 ],
+                tags=("even",) if index % 2 == 0 else (),
             )
         return tree
 
@@ -321,29 +512,190 @@ class ClinicApp:
         return dict(zip(tree["columns"], tree.item(selection[0], "values")))
 
     def home(self):
-        frame = self.page(
-            "Welcome",
-            "Use the navigation to open the tasks available for your role. Dates use YYYY-MM-DD and times use 24-hour HH:MM.",
+        for child in self.content.winfo_children():
+            child.destroy()
+        self.set_navigation("Home")
+        user = self.service.user
+        role = user["role"]
+        day = self.service.clock().date().isoformat()
+        rows = self.service.appointments(day)
+        if role == "Doctor":
+            mine = {
+                d["doctor_id"]
+                for d in self.service.doctors()
+                if d["user_id"] == user["user_id"]
+            }
+            rows = [r for r in rows if r["doctor_id"] in mine]
+        active = [r for r in rows if r["status"] != "Cancelled"]
+        # A scrollable overview keeps every action available on a smaller laptop.
+        canvas = tk.Canvas(self.content, bg=BG, highlightthickness=0)
+        scroll = ttk.Scrollbar(self.content, orient="vertical", command=canvas.yview)
+        canvas.configure(yscrollcommand=scroll.set)
+        canvas.pack(side="left", fill="both", expand=True)
+        scroll.pack(side="right", fill="y")
+        body = tk.Frame(canvas, bg=BG)
+        handle = canvas.create_window(0, 0, anchor="nw", window=body)
+        body.bind(
+            "<Configure>",
+            lambda event: canvas.configure(scrollregion=canvas.bbox("all")),
         )
-        role = self.service.user["role"]
-        text = {
-            "Receptionist": "Register patients, search or update demographic details, book and reschedule appointments, check patients in and manage cancellations.",
-            "Doctor": "Find patients, review visit history and record a consultation for a checked-in appointment assigned to your doctor profile.",
-            "Nurse": "Find patients, review visit history and record a consultation for a checked-in appointment.",
-            "Admin": "Create staff accounts and doctor profiles, set weekly schedules and unavailable dates, review reports and create database backups.",
-        }[role]
-        ttk.Label(frame, text=text, wraplength=900).pack(anchor="w", pady=15)
-        ttk.Label(
-            frame,
-            text="This is a coursework prototype. Use fictional patient data only.\nThe database and exports are not encrypted; protect the computer and backup storage.",
-            wraplength=900,
-            style="Small.TLabel",
-        ).pack(anchor="w", pady=15)
-        ttk.Label(
-            frame,
-            text="Build sequence: Admin creates users → Admin adds doctors and schedules → Reception registers patients and books → Reception checks in → Doctor or nurse records visit.",
-            wraplength=900,
-        ).pack(anchor="w", pady=10)
+        canvas.bind(
+            "<Configure>", lambda event: canvas.itemconfigure(handle, width=event.width)
+        )
+        banner = Panel(body, fill=PALE, padding=20)
+        banner.pack(fill="x", pady=(0, 14))
+        label(
+            banner.body, "CONNECTED CARE. ONE WORKSPACE.", 8, color=TEAL, bold=True
+        ).pack(anchor="w", pady=(0, 10))
+        first = user["full_name"].split()[0]
+        label(banner.body, f"Welcome back, {first}.", 23, bold=True).pack(anchor="w")
+        descriptions = {
+            "Receptionist": "Manage patient details, appointments and arrivals in one place.",
+            "Doctor": "Review your appointments and keep patient visit records up to date.",
+            "Nurse": "Support your patients with clear visit notes and accessible history.",
+            "Admin": "Keep your clinic organised with staff, schedules, reports and backups.",
+        }
+        label(banner.body, descriptions[role], 10, color=MUTED, wraplength=650).pack(
+            anchor="w", pady=(6, 0)
+        )
+        stats = tk.Frame(body, bg=BG)
+        stats.pack(fill="x", pady=(0, 14))
+        counts = [
+            ("Scheduled today", len(active)),
+            ("Checked in", sum(r["status"] == "Checked-in" for r in rows)),
+            ("Completed", sum(r["status"] == "Completed" for r in rows)),
+        ]
+        for i, (title, value) in enumerate(counts):
+            stats.columnconfigure(i, weight=1, uniform="stats")
+            card = Panel(stats, padding=14)
+            card.grid(row=0, column=i, sticky="nsew", padx=(0, 12 if i < 2 else 0))
+            label(card.body, title, 9, color=MUTED).pack(anchor="w")
+            label(card.body, str(value), 22, bold=True).pack(anchor="w", pady=(5, 0))
+        columns = tk.Frame(body, bg=BG)
+        columns.pack(fill="x", pady=(0, 14))
+        columns.columnconfigure(0, weight=55, uniform="cards")
+        columns.columnconfigure(1, weight=45, uniform="cards")
+        appointments = Panel(columns, padding=16)
+        appointments.grid(row=0, column=0, sticky="nsew", padx=(0, 16))
+        label(appointments.body, "Today's appointments", 12, bold=True).pack(
+            anchor="w", pady=(0, 14)
+        )
+        upcoming = [r for r in active if r["status"] in ("Booked", "Checked-in")]
+        if not upcoming:
+            empty = tk.Frame(appointments.body, bg="#F6FAF8")
+            empty.pack(fill="x", pady=(0, 15))
+            label(empty, "No waiting appointments", 11, bold=True).pack(
+                anchor="center", padx=15, pady=(27, 9)
+            )
+            label(
+                empty,
+                "Your daily list will show new bookings\nand patients ready to be seen.",
+                9,
+                color=MUTED,
+                justify="center",
+            ).pack(anchor="center", padx=12, pady=(0, 27))
+        else:
+            for row in upcoming[:3]:
+                line = tk.Frame(appointments.body, bg=WHITE)
+                line.pack(fill="x", pady=(0, 12))
+                label(line, row["start_time"], 11, color=TEAL, bold=True).pack(
+                    anchor="w"
+                )
+                label(line, row["patient"], 11, bold=True).pack(anchor="w", pady=(4, 2))
+                label(
+                    line, row["doctor"] + "  ·  " + row["status"], 9, color=MUTED
+                ).pack(anchor="w")
+                tk.Frame(appointments.body, bg=LINE, height=1).pack(
+                    fill="x", pady=(0, 10)
+                )
+        ttk.Button(
+            appointments.body,
+            text="View appointments",
+            style="Primary.TButton",
+            command=self.guarded(
+                lambda: self.navigate("Appointments", self.appointments_screen)
+            ),
+        ).pack(anchor="w", pady=(2, 0))
+        account = Panel(columns, padding=16)
+        account.grid(row=0, column=1, sticky="nsew")
+        label(account.body, "Your workspace", 12, bold=True).pack(
+            anchor="w", pady=(0, 10)
+        )
+        label(account.body, user["full_name"], 13, bold=True, wraplength=300).pack(
+            anchor="w"
+        )
+        label(account.body, role + "  ·  Staff account", 9, color=TEAL).pack(
+            anchor="w", pady=(5, 10)
+        )
+        tk.Frame(account.body, bg=LINE, height=1).pack(fill="x", pady=(0, 10))
+        for title, value in [
+            ("Workspace date", self.service.clock().strftime("%d %B %Y")),
+            ("Access level", role),
+            ("Connection", "Local workspace · Offline capable"),
+        ]:
+            label(account.body, title, 8, color=MUTED).pack(anchor="w", pady=(0, 4))
+            label(account.body, value, 10, wraplength=290).pack(anchor="w", pady=(0, 6))
+        actions = Panel(body, padding=16)
+        actions.pack(fill="x", pady=(0, 14))
+        label(actions.body, "Quick actions", 12, bold=True).pack(
+            anchor="w", pady=(0, 12)
+        )
+        buttons = tk.Frame(actions.body, bg=WHITE)
+        buttons.pack(fill="x")
+        if role == "Receptionist":
+            self.button(
+                buttons,
+                "Register a patient",
+                lambda: self.patient_form(None, self.home),
+            )
+            self.button(
+                buttons,
+                "Book an appointment",
+                lambda: self.booking_form(None, day, self.home),
+            )
+            self.button(
+                buttons,
+                "Open patient directory",
+                lambda: self.navigate("Patients", self.patients_screen),
+            )
+        elif role == "Admin":
+            self.button(
+                buttons,
+                "Manage staff",
+                lambda: self.navigate("Users", self.users_screen),
+            )
+            self.button(
+                buttons,
+                "View reports",
+                lambda: self.navigate("Reports", self.reports_screen),
+            )
+            self.button(
+                buttons,
+                "Create a backup",
+                lambda: self.navigate("Audit and backup", self.audit_screen),
+            )
+        else:
+            self.button(
+                buttons,
+                "Find a patient",
+                lambda: self.navigate("Patients", self.patients_screen),
+            )
+            self.button(
+                buttons,
+                "Open daily list",
+                lambda: self.navigate("Appointments", self.appointments_screen),
+            )
+        label(
+            body,
+            "Sunrise Community Clinic  ·  "
+            + (
+                "Demonstration only. All records are fictional."
+                if self.demo
+                else "Staff workspace"
+            ),
+            8,
+            color=MUTED,
+        ).pack(anchor="w", pady=(0, 8))
 
     def patients_screen(self):
         frame = self.page(
