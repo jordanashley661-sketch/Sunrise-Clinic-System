@@ -72,6 +72,9 @@ class GuiTests(unittest.TestCase):
         self.root.update()
 
     def tearDown(self):
+        # Let widgets cancel the timers they own before clearing root callbacks.
+        for child in self.root.winfo_children():
+            child.destroy()
         for item in self.root.tk.call("after", "info"):
             self.root.after_cancel(item)
         self.root.tk.call("tk", "scaling", self.initial_scaling)
