@@ -4,7 +4,9 @@ import sqlite3
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 
+from .weekly_calendar import WeeklyCalendar
 from .services import AccessDenied, ClinicError, PATIENT_FIELDS, ROLES
+from .patient_ui import PatientPortalUI
 from .theme import (
     BG,
     FONT,
@@ -14,6 +16,7 @@ from .theme import (
     TEAL,
     WHITE,
     Panel,
+    SlimScrollbar,
     brand,
     configure_theme,
     draw_login_art,
@@ -22,6 +25,12 @@ from .theme import (
 )
 
 LABELS = {
+    "confirm_password": "Confirm password",
+    "invitation": "Clinic invitation code (optional)",
+    "insurance_provider": "Medical aid provider",
+    "insurance_plan": "Plan (optional)",
+    "membership_number": "Membership number",
+    "member_type": "Member type",
     "first_name": "First name",
     "last_name": "Surname",
     "id_type": "ID type",
@@ -52,7 +61,7 @@ LABELS = {
 }
 
 
-class ClinicApp:
+class ClinicApp(PatientPortalUI):
     """Task-focused, role-dependent screens for a single local workstation."""
 
     def __init__(self, root, service, demo=False):
@@ -65,8 +74,27 @@ class ClinicApp:
         self.last_touch = 0
         root.bind_all("<KeyPress>", self.activity, add="+")
         root.bind_all("<ButtonPress>", self.activity, add="+")
+        root.bind_all("<MouseWheel>", self.scroll_under_pointer, add="+")
+        root.bind_all("<Button-4>", self.scroll_under_pointer, add="+")
+        root.bind_all("<Button-5>", self.scroll_under_pointer, add="+")
         root.after(10_000, self.check_idle)
         self.login_screen()
+
+    def scroll_under_pointer(self, event):
+        """Scroll only the viewport containing the pointer, including its form widgets."""
+        widget = self.root.winfo_containing(event.x_root, event.y_root)
+        if isinstance(widget, (tk.Text, ttk.Treeview, ttk.Combobox, SlimScrollbar)):
+            return
+        while widget is not None:
+            if isinstance(widget, tk.Canvas) and widget.cget("yscrollcommand"):
+                first, last = widget.yview()
+                if last - first < .999:
+                    delta = getattr(event, "delta", 0)
+                    units = (-max(1, abs(delta) // 120) if delta > 0 else
+                             max(1, abs(delta) // 120)) if delta else (-1 if event.num == 4 else 1)
+                    widget.yview_scroll(units, "units")
+                    return "break"
+            widget = widget.master
 
     def guarded(self, callback):
         def run():
@@ -143,8 +171,9 @@ class ClinicApp:
         b.pack(side="left", padx=(0, 8), pady=6)
         return b
 
-    def login_screen(self):
+    def login_screen(self, patient=False):
         self.clear()
+        self.patient_login_mode = patient
         self.session_role = None
         self.nav_buttons = {}
         self.root.configure(background=WHITE)
@@ -158,11 +187,48 @@ class ClinicApp:
         art.bind("<Configure>", lambda event: draw_login_art(art))
         right = tk.Frame(outer, bg=WHITE)
         right.grid(row=0, column=1, sticky="nsew")
-        label(right, "Staff access only", 9, color=MUTED).place(
-            relx=1, x=-30, y=24, anchor="ne"
+        label(
+            right, "Patient portal" if patient else "Staff access only", 9, color=MUTED
+        ).place(relx=1, x=-30, y=24, anchor="ne")
+        viewport = tk.Frame(right, bg=WHITE)
+        viewport.pack(fill="both", expand=True, padx=(48, 28), pady=(60, 52))
+        login_canvas = tk.Canvas(viewport, bg=WHITE, highlightthickness=0)
+        login_scroll = SlimScrollbar(
+            viewport, orient="vertical", command=login_canvas.yview
         )
-        form = tk.Frame(right, bg=WHITE)
-        form.place(relx=0.5, rely=0.48, anchor="center", relwidth=0.76)
+        login_canvas.configure(yscrollcommand=login_scroll.set)
+        login_scroll.pack(side="right", fill="y")
+        login_canvas.pack(side="left", fill="both", expand=True)
+        form = tk.Frame(login_canvas, bg=WHITE)
+        form_window = login_canvas.create_window(12, 0, anchor="nw", window=form)
+
+        def fit_login(_event=None):
+            width = max(1, login_canvas.winfo_width() - 32)
+            login_canvas.itemconfigure(form_window, width=width)
+            height = form.winfo_reqheight()
+            top = max(0, (login_canvas.winfo_height() - height) // 2)
+            login_canvas.coords(form_window, 12, top)
+            login_canvas.configure(
+                scrollregion=(
+                    0,
+                    0,
+                    width + 24,
+                    max(height, login_canvas.winfo_height()),
+                )
+            )
+
+        form.bind("<Configure>", fit_login)
+        login_canvas.bind("<Configure>", fit_login)
+        if not self.service.needs_setup():
+            modes = tk.Frame(form, bg=WHITE)
+            modes.pack(fill="x", pady=(0, 16))
+            for text, mode in [("Staff sign in", False), ("Patient portal", True)]:
+                ttk.Button(
+                    modes,
+                    text=text,
+                    style="Primary.TButton" if mode == patient else "TButton",
+                    command=lambda m=mode: self.login_screen(m),
+                ).pack(side="left", expand=True, fill="x")
         lock = tk.Canvas(form, width=40, height=40, bg=WHITE, highlightthickness=0)
         lock.pack(anchor="w", pady=(0, 18))
         rounded(lock, 0, 0, 40, 40, 12, fill=PALE, outline="")
@@ -176,16 +242,29 @@ class ClinicApp:
         setup = self.service.needs_setup()
         label(
             form,
-            "Create your workspace" if setup else "Sign in to your workspace",
+            (
+                "Create your workspace"
+                if setup
+                else (
+                    "Sign in to your patient portal"
+                    if patient
+                    else "Sign in to your workspace"
+                )
+            ),
             22,
             bold=True,
+            wraplength=430,
         ).pack(anchor="w")
         label(
             form,
             (
                 "Create the first administrator."
                 if setup
-                else "Enter your staff details to get started."
+                else (
+                    "Your appointments and details, in one place."
+                    if patient
+                    else "Enter your staff details to get started."
+                )
             ),
             10,
             color=MUTED,
@@ -214,7 +293,9 @@ class ClinicApp:
             border.pack(fill="x", pady=(0, 16))
             border.columnconfigure(0, weight=1)
             entry = ttk.Entry(
-                border, style="Login.TEntry", show="*" if name == "password" else ""
+                border,
+                style="Login.TEntry",
+                show="*" if name in ("password", "confirm_password") else "",
             )
             entry._field_label = LABELS[name]
             entry.grid(row=0, column=0, sticky="ew")
@@ -237,7 +318,12 @@ class ClinicApp:
                 self.service.bootstrap_admin(
                     data["username"], data["full_name"], data["password"]
                 )
-            self.service.login(data["username"], data["password"])
+            account = self.service.login(data["username"], data["password"])
+            if (account["role"] == "Patient") != patient:
+                self.service.logout()
+                raise AccessDenied(
+                    "Use Patient portal for patient accounts or Staff sign in for staff accounts."
+                )
             self.shell()
 
         login_button = ttk.Button(
@@ -249,10 +335,20 @@ class ClinicApp:
         login_button.pack(fill="x", pady=(5, 18))
         for entry in inputs.values():
             entry.bind("<Return>", lambda event: login_button.invoke())
+        if patient and not setup:
+            ttk.Button(
+                form,
+                text="Create a patient account",
+                style="Link.TButton",
+                command=self.guarded(self.patient_signup_form),
+            ).pack(fill="x", pady=(0, 9))
         label(form, "Having trouble signing in?", 9, color=MUTED).pack(anchor="center")
-        label(form, "Contact your clinic administrator.", 9, bold=True).pack(
-            anchor="center", pady=(5, 18)
-        )
+        label(
+            form,
+            "Contact reception." if patient else "Contact your clinic administrator.",
+            9,
+            bold=True,
+        ).pack(anchor="center", pady=(5, 18))
         tk.Frame(form, bg=LINE, height=1).pack(fill="x", pady=(0, 14))
         label(
             form,
@@ -266,7 +362,11 @@ class ClinicApp:
             ).pack(anchor="w", pady=(18, 5))
             label(
                 form,
-                "admin / reception / doctor / nurse\nPassword: SunriseDemo!2026",
+                (
+                    "patient\nPassword: SunriseDemo!2026"
+                    if patient
+                    else "admin / reception / doctor / nurse\nPassword: SunriseDemo!2026"
+                ),
                 9,
                 color=MUTED,
             ).pack(anchor="w")
@@ -299,7 +399,9 @@ class ClinicApp:
                 )
             else:
                 entry = ttk.Entry(
-                    parent, width=46, show="*" if name == "password" else ""
+                    parent,
+                    width=46,
+                    show="*" if name in ("password", "confirm_password") else "",
                 )
                 entry.insert(0, str(defaults.get(name, "") or ""))
             entry.grid(row=row, column=1, sticky="ew", pady=5)
@@ -345,12 +447,18 @@ class ClinicApp:
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)
         brand(sidebar).pack(anchor="w", padx=22, pady=(28, 28))
-        label(sidebar, "STAFF WORKSPACE", 8, color=MUTED, bold=True).pack(
-            anchor="w", padx=25, pady=(0, 12)
-        )
+        patient = user["role"] == "Patient"
+        label(
+            sidebar,
+            "MY PATIENT PORTAL" if patient else "STAFF WORKSPACE",
+            8,
+            color=MUTED,
+            bold=True,
+        ).pack(anchor="w", padx=25, pady=(0, 12))
         links = [("Home", self.home)]
         if user["role"] in ("Receptionist", "Doctor", "Nurse"):
             links.append(("Patients", self.patients_screen))
+        links.append(("Weekly calendar", self.weekly_calendar_screen))
         links.append(("Appointments", self.appointments_screen))
         if user["role"] == "Admin":
             links.extend(
@@ -361,6 +469,14 @@ class ClinicApp:
                     ("Audit and backup", self.audit_screen),
                 ]
             )
+        if patient:
+            links = [
+                ("My overview", self.patient_home),
+                ("My appointments", self.patient_appointments_screen),
+                ("Personal details", self.patient_details_screen),
+                ("Medical insurance", self.patient_insurance_screen),
+                ("Visit summaries", self.patient_visits_screen),
+            ]
         for text, callback in links:
             b = ttk.Button(
                 sidebar,
@@ -376,18 +492,21 @@ class ClinicApp:
             sidebar,
             text="Log out",
             style="Nav.TButton",
-            command=self.guarded(lambda: (self.service.logout(), self.login_screen())),
+            command=self.guarded(
+                lambda: (self.service.logout(), self.login_screen(patient))
+            ),
         ).pack(side="bottom", fill="x", padx=16, pady=(10, 20))
         note = tk.Frame(sidebar, bg="#F1F8F5")
         note.pack(side="bottom", fill="x", padx=20, pady=(12, 4))
-        label(note, "Your care, in one place.", 10, bold=True).pack(
+        label(note, "Your care, in one place.", 10, bold=True, wraplength=148).pack(
             anchor="w", padx=14, pady=(16, 8)
         )
         label(
             note,
-            "Keep information up to date\nfor a smoother clinic visit.",
+            "Keep information up to date for a smoother clinic visit.",
             9,
             color=MUTED,
+            wraplength=148,
         ).pack(anchor="w", padx=14, pady=(0, 16))
         main = tk.Frame(self.root, bg=BG)
         main.pack(side="left", fill="both", expand=True)
@@ -410,9 +529,12 @@ class ClinicApp:
         details = tk.Frame(who, bg=WHITE)
         details.pack(side="left")
         label(details, user["full_name"], 10, bold=True).pack(anchor="w")
-        label(details, user["role"] + "  ·  Staff account", 8, color=MUTED).pack(
-            anchor="w", pady=(3, 0)
-        )
+        label(
+            details,
+            user["role"] + ("  ·  My account" if patient else "  ·  Staff account"),
+            8,
+            color=MUTED,
+        ).pack(anchor="w", pady=(3, 0))
         if self.demo:
             demo_text = "DEMO · Fictional records only  |  " + getattr(
                 self.service, "demo_clock_label", "Live system clock"
@@ -433,6 +555,14 @@ class ClinicApp:
                 "<Configure>",
                 lambda event: strip.configure(wraplength=max(180, event.width - 56)),
             )
+        ttk.Button(
+            main, text=f"Data file: {self.service.db.path.name}", style="Link.TButton",
+            command=self.guarded(lambda: messagebox.showinfo(
+                "Shared clinic data", "All roles on this computer must open this same data file:\n\n"
+                + str(self.service.db.path) + "\n\nDemo and normal mode use separate databases. Other computers do not synchronise in this offline app.",
+                parent=self.root,
+            )),
+        ).pack(anchor="w", padx=26, pady=(6, 0))
         self.content = ttk.Frame(main, style="Workspace.TFrame", padding=(26, 24))
         self.content.pack(fill="both", expand=True)
         self.home()
@@ -446,13 +576,22 @@ class ClinicApp:
             b.configure(style="Selected.Nav.TButton" if text == key else "Nav.TButton")
         if hasattr(self, "breadcrumb"):
             self.breadcrumb.set(
-                "Staff workspace  /  " + ("My overview" if key == "Home" else key)
+                (
+                    "Patient portal  /  "
+                    if self.service.user and self.service.user["role"] == "Patient"
+                    else "Staff workspace  /  "
+                )
+                + ("My overview" if key == "Home" else key)
             )
 
     def page(self, title, description=""):
         for child in self.content.winfo_children():
             child.destroy()
         key = {
+            "My appointments": "My appointments",
+            "Personal details": "Personal details",
+            "Medical insurance": "Medical insurance",
+            "Visit summaries": "Visit summaries",
             "Patient directory": "Patients",
             "Daily appointments": "Appointments",
             "Staff accounts": "Users",
@@ -485,8 +624,8 @@ class ClinicApp:
         for col in columns:
             tree.heading(col, text=col.replace("_", " ").title())
             tree.column(col, width=110, minwidth=55, stretch=True)
-        y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
-        x = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
+        y = SlimScrollbar(frame, orient="vertical", command=tree.yview)
+        x = SlimScrollbar(frame, orient="horizontal", command=tree.xview)
         tree.configure(yscrollcommand=y.set, xscrollcommand=x.set)
         tree.grid(row=0, column=0, sticky="nsew")
         y.grid(row=0, column=1, sticky="ns")
@@ -512,6 +651,8 @@ class ClinicApp:
         return dict(zip(tree["columns"], tree.item(selection[0], "values")))
 
     def home(self):
+        if self.service.user["role"] == "Patient":
+            return self.patient_home()
         for child in self.content.winfo_children():
             child.destroy()
         self.set_navigation("Home")
@@ -529,7 +670,7 @@ class ClinicApp:
         active = [r for r in rows if r["status"] != "Cancelled"]
         # A scrollable overview keeps every action available on a smaller laptop.
         canvas = tk.Canvas(self.content, bg=BG, highlightthickness=0)
-        scroll = ttk.Scrollbar(self.content, orient="vertical", command=canvas.yview)
+        scroll = SlimScrollbar(self.content, orient="vertical", command=canvas.yview)
         canvas.configure(yscrollcommand=scroll.set)
         canvas.pack(side="left", fill="both", expand=True)
         scroll.pack(side="right", fill="y")
@@ -558,6 +699,8 @@ class ClinicApp:
         label(banner.body, descriptions[role], 10, color=MUTED, wraplength=650).pack(
             anchor="w", pady=(6, 0)
         )
+        if role in ("Admin", "Doctor"):
+            WeeklyCalendar(body, self.service, self.guarded).pack(fill="x", pady=(0, 18))
         stats = tk.Frame(body, bg=BG)
         stats.pack(fill="x", pady=(0, 14))
         counts = [
@@ -779,6 +922,12 @@ class ClinicApp:
 
         self.button(bar, "Save patient", save)
         self.button(bar, "Close", window.destroy)
+        if patient_id:
+            self.button(
+                bar,
+                "Create portal invitation",
+                lambda: self.patient_invitation_dialog(patient_id),
+            )
 
     def history_dialog(self, patient_id):
         patient = self.service.patient(patient_id)
@@ -800,10 +949,17 @@ class ClinicApp:
             text.insert("end", "No visits recorded for this patient.")
         text.configure(state="disabled")
 
+    def weekly_calendar_screen(self):
+        frame = self.page(
+            "Weekly calendar",
+            "Patient bookings appear here from the shared clinic database. Use Next booking to jump to future appointments.",
+        )
+        WeeklyCalendar(frame, self.service, self.guarded).pack(fill="both", expand=True)
+
     def appointments_screen(self):
         frame = self.page(
             "Daily appointments",
-            "Refresh after a change. The list includes cancelled appointments; exported daily lists exclude them.",
+            "This list shows one date only. Use Weekly calendar for a week or Next booking to find future appointments. The list includes cancelled appointments.",
         )
         bar = ttk.Frame(frame)
         bar.pack(fill="x")
@@ -1142,7 +1298,7 @@ class ClinicApp:
     def users_screen(self):
         frame = self.page(
             "Staff accounts",
-            "Passphrases must contain 15–128 characters. Five failed logins lock the account until an administrator resets or unlocks it.",
+            "Staff and patient account recovery. Passphrases must contain 15–128 characters. Five failed logins lock the account until an administrator resets or unlocks it.",
         )
         bar = ttk.Frame(frame)
         bar.pack(fill="x")
@@ -1186,7 +1342,10 @@ class ClinicApp:
                 inner,
                 ["role", "is_active", "password"],
                 row,
-                {"role": list(ROLES), "is_active": ["1", "0"]},
+                {
+                    "role": ["Patient"] if row["role"] == "Patient" else list(ROLES),
+                    "is_active": ["1", "0"],
+                },
             )
             ttk.Label(
                 inner,

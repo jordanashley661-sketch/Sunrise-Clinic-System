@@ -1,6 +1,6 @@
 """Application rules. The UI calls this layer rather than executing SQL."""
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 import csv
 import os
@@ -8,6 +8,8 @@ import tempfile
 import re
 import sqlite3
 import time
+import hashlib
+import secrets
 
 from .database import Database
 from .security import hash_password, verify_password
@@ -206,7 +208,12 @@ class ClinicService:
                 raise ClinicError("Select an existing user.")
             new_role = role if role is not None else row["role"]
             new_active = int(active) if active is not None else row["is_active"]
-            if new_role not in ROLES:
+            if row["role"] == "Patient":
+                if new_role != "Patient":
+                    raise ClinicError(
+                        "Patient accounts cannot be converted into staff accounts."
+                    )
+            elif new_role not in ROLES:
                 raise ClinicError("Select a valid role.")
             if (
                 row["role"] == "Admin"
@@ -362,7 +369,7 @@ class ClinicService:
         return dict(row)
 
     def doctors(self, active_only=True):
-        self._require()
+        self._require(*ROLES)
         with self.db.connect() as con:
             sql = "SELECT doctor_id,user_id,first_name,last_name,phone,is_active FROM Doctor"
             if active_only:
@@ -413,7 +420,7 @@ class ClinicService:
             raise ClinicError("This user is already linked to a doctor.") from None
 
     def schedule(self, doctor_id):
-        self._require()
+        self._require(*ROLES)
         with self.db.connect() as con:
             return [
                 dict(r)
@@ -544,7 +551,11 @@ class ClinicService:
     def book(
         self, patient_id, doctor_id, day, start_time, reason="", appointment_id=None
     ):
-        self._require("Receptionist")
+        self._require("Receptionist", "Patient")
+        if self.user["role"] == "Patient" and patient_id != self._my_patient_id():
+            raise AccessDenied("You can book only for your own patient profile.")
+        if len(reason) > 500:
+            raise ClinicError("Booking reason must be 500 characters or fewer.")
         parse_date(day)
         minutes(start_time)
         try:
@@ -564,6 +575,16 @@ class ClinicService:
                         )
                     if old["patient_id"] != patient_id:
                         raise ClinicError("Rescheduling cannot change the patient.")
+                    if (
+                        self.user["role"] == "Patient"
+                        and datetime.fromisoformat(
+                            old["date"] + "T" + old["start_time"]
+                        )
+                        <= self.clock()
+                    ):
+                        raise ClinicError(
+                            "Past appointments cannot be rescheduled through the patient portal."
+                        )
                 slots, duration = self._free_slots(
                     con, doctor_id, day, appointment_id, patient_id
                 )
@@ -615,7 +636,7 @@ class ClinicService:
             ) from None
 
     def appointments(self, day, doctor_id=None):
-        self._require()
+        self._require(*ROLES)
         parse_date(day)
         sql = """SELECT a.appointment_id,a.patient_id,a.doctor_id,a.date,a.start_time,a.status,
          p.first_name||' '||p.last_name AS patient,d.first_name||' '||d.last_name AS doctor
@@ -628,6 +649,56 @@ class ClinicService:
             return [
                 dict(r) for r in con.execute(sql + " ORDER BY doctor,start_time", args)
             ]
+
+    def weekly_appointments(self, day, doctor_id=None):
+        """Monday–Sunday administrative schedule from the shared booking table.
+
+        Doctors see only records assigned to their linked doctor profile.
+        Admin/reception/nurses can review the clinic-wide schedule.
+        """
+        self._require(*ROLES)
+        target = parse_date(day)
+        monday = target - timedelta(days=target.weekday())
+        end = monday + timedelta(days=7)
+        sql = """SELECT a.appointment_id,a.patient_id,a.doctor_id,a.date,
+            a.start_time,a.duration_minutes,a.status,a.reason,
+            p.first_name||' '||p.last_name AS patient,
+            d.first_name||' '||d.last_name AS doctor
+            FROM Appointment a JOIN Patient p USING(patient_id)
+            JOIN Doctor d USING(doctor_id) WHERE a.date>=? AND a.date<?"""
+        args = [monday.isoformat(), end.isoformat()]
+        if self.user["role"] == "Doctor":
+            sql += " AND d.user_id=?"
+            args.append(self.user["user_id"])
+        if doctor_id is not None:
+            sql += " AND a.doctor_id=?"
+            args.append(doctor_id)
+        with self.db.connect() as con:
+            return [dict(row) for row in con.execute(
+                sql + " ORDER BY a.date,a.start_time,a.doctor_id,a.appointment_id", args
+            )]
+
+    def next_staff_appointment(self, doctor_id=None):
+        """Find the next upcoming booking, even outside the displayed week."""
+        self._require(*ROLES)
+        now = self.clock()
+        sql = """SELECT a.appointment_id,a.date,a.start_time,
+            p.first_name||' '||p.last_name AS patient,
+            d.first_name||' '||d.last_name AS doctor
+            FROM Appointment a JOIN Patient p USING(patient_id)
+            JOIN Doctor d USING(doctor_id)
+            WHERE (a.date>? OR (a.date=? AND a.start_time>=?))
+            AND a.status IN ('Booked','Checked-in')"""
+        args = [now.date().isoformat(), now.date().isoformat(), now.strftime("%H:%M")]
+        if self.user["role"] == "Doctor":
+            sql += " AND d.user_id=?"
+            args.append(self.user["user_id"])
+        if doctor_id is not None:
+            sql += " AND a.doctor_id=?"
+            args.append(doctor_id)
+        with self.db.connect() as con:
+            row = con.execute(sql + " ORDER BY a.date,a.start_time,a.appointment_id LIMIT 1", args).fetchone()
+        return dict(row) if row else None
 
     def appointment(self, appointment_id):
         """Return administrative details for rescheduling an existing appointment."""
@@ -855,5 +926,282 @@ class ClinicService:
                 for r in con.execute(
                     """SELECT l.audit_id,l.timestamp,u.username,l.action,l.entity,l.entity_id
              FROM AuditLog l LEFT JOIN User u USING(user_id) ORDER BY audit_id DESC LIMIT 300"""
+                )
+            ]
+
+    def _my_patient_id(self):
+        """Resolve ownership from the authenticated user, never from a UI field."""
+        self._require("Patient")
+        with self.db.connect() as con:
+            row = con.execute(
+                "SELECT patient_id FROM PatientPortal WHERE user_id=?",
+                (self.user["user_id"],),
+            ).fetchone()
+        if not row:
+            raise AccessDenied("Your patient profile is not linked. Contact reception.")
+        return row[0]
+
+    def issue_patient_invitation(self, patient_id):
+        """Reception checks identity in person before handing over this one-use code."""
+        self._require("Receptionist")
+        token = secrets.token_urlsafe(24)
+        digest = hashlib.sha256(token.encode()).hexdigest()
+        with self.db.connect(write=True) as con:
+            if not con.execute(
+                "SELECT 1 FROM Patient WHERE patient_id=?", (patient_id,)
+            ).fetchone():
+                raise ClinicError("Select an existing patient.")
+            if con.execute(
+                "SELECT 1 FROM PatientPortal WHERE patient_id=?", (patient_id,)
+            ).fetchone():
+                raise ClinicError(
+                    "This patient already has a portal account. Contact the administrator for account recovery."
+                )
+            con.execute(
+                "DELETE FROM PatientInvitation WHERE patient_id=? AND used_at IS NULL",
+                (patient_id,),
+            )
+            con.execute(
+                "INSERT INTO PatientInvitation VALUES(?,?,?,?,NULL)",
+                (
+                    digest,
+                    patient_id,
+                    self.user["user_id"],
+                    (self.clock() + timedelta(hours=24)).isoformat(timespec="seconds"),
+                ),
+            )
+            self._audit(con, "portal_invitation", "Patient", patient_id)
+        return token
+
+    def register_patient_account(self, username, password, data=None, invitation=""):
+        """Atomically sign up a new patient or redeem a clinic-issued invitation.
+
+        Existing clinical records can only be linked by a one-use invitation;
+        knowing a patient's ID or date of birth is never sufficient.
+        """
+        if self.user:
+            raise AccessDenied("Log out before creating a patient account.")
+        if self.needs_setup():
+            raise ClinicError("Clinic setup is not complete. Contact reception.")
+        username = username.strip()
+        if not re.fullmatch(r"[A-Za-z0-9._@+\-]{3,80}", username):
+            raise ClinicError("Use a username of 3–80 letters, numbers or . _ @ + -.")
+        encoded = hash_password(password)
+        token = invitation.strip()
+        values = None if token else self._patient_values(data or {})
+        if values and not values["email"]:
+            raise ClinicError("An email address is required for your patient account.")
+        try:
+            with self.db.connect(write=True) as con:
+                if token:
+                    digest = hashlib.sha256(token.encode()).hexdigest()
+                    invite = con.execute(
+                        "SELECT * FROM PatientInvitation WHERE token_hash=? AND used_at IS NULL",
+                        (digest,),
+                    ).fetchone()
+                    if (
+                        not invite
+                        or datetime.fromisoformat(invite["expires_at"]) <= self.clock()
+                    ):
+                        raise ClinicError(
+                            "Invitation is invalid, expired or already used. Ask reception for a new code."
+                        )
+                    pid = invite["patient_id"]
+                    profile = con.execute(
+                        "SELECT first_name,last_name FROM Patient WHERE patient_id=?",
+                        (pid,),
+                    ).fetchone()
+                    full_name = profile["first_name"] + " " + profile["last_name"]
+                else:
+                    full_name = values["first_name"] + " " + values["last_name"]
+                cur = con.execute(
+                    "INSERT INTO User(username,password_hash,full_name,role,created_at) VALUES(?,?,?,'Patient',?)",
+                    (username, encoded, full_name, stamp()),
+                )
+                uid = cur.lastrowid
+                if not token:
+                    fields = list(PATIENT_FIELDS) + [
+                        "created_by",
+                        "updated_by",
+                        "created_at",
+                        "updated_at",
+                    ]
+                    cur = con.execute(
+                        f'INSERT INTO Patient({",".join(fields)}) VALUES({",".join("?" for _ in fields)})',
+                        list(values.values()) + [uid, uid, stamp(), stamp()],
+                    )
+                    pid = cur.lastrowid
+                con.execute(
+                    "INSERT INTO PatientPortal(user_id,patient_id) VALUES(?,?)",
+                    (uid, pid),
+                )
+                if token:
+                    con.execute(
+                        "UPDATE PatientInvitation SET used_at=? WHERE token_hash=?",
+                        (stamp(), digest),
+                    )
+                self._audit(con, "patient_signup", "Patient", pid, uid)
+                return pid
+        except sqlite3.IntegrityError:
+            raise ClinicError(
+                "Registration could not be completed. Use a different username, or ask reception for an invitation if you are already registered."
+            ) from None
+
+    def my_profile(self):
+        pid = self._my_patient_id()
+        fields = ["patient_id"] + list(PATIENT_FIELDS)
+        with self.db.connect() as con:
+            return dict(
+                con.execute(
+                    "SELECT " + ",".join(fields) + " FROM Patient WHERE patient_id=?",
+                    (pid,),
+                ).fetchone()
+            )
+
+    def update_my_contact(self, data):
+        pid = self._my_patient_id()
+        allowed = ("phone", "email", "address", "next_of_kin_name", "next_of_kin_phone")
+        if set(data) - set(allowed):
+            raise ClinicError(
+                "Only contact and next-of-kin details can be changed here. Ask reception to correct identity details."
+            )
+        profile = self.my_profile()
+        profile.update(data)
+        values = self._patient_values(profile)
+        with self.db.connect(write=True) as con:
+            con.execute(
+                "UPDATE Patient SET "
+                + ",".join(f"{k}=?" for k in allowed)
+                + ",updated_by=?,updated_at=? WHERE patient_id=?",
+                [values[k] for k in allowed] + [self.user["user_id"], stamp(), pid],
+            )
+            self._audit(con, "patient_contact_update", "Patient", pid)
+
+    def my_insurance(self):
+        self._my_patient_id()
+        with self.db.connect() as con:
+            return dict(
+                con.execute(
+                    "SELECT insurance_provider,insurance_plan,membership_number,member_type FROM PatientPortal WHERE user_id=?",
+                    (self.user["user_id"],),
+                ).fetchone()
+            )
+
+    def update_my_insurance(self, data):
+        pid = self._my_patient_id()
+        fields = (
+            "insurance_provider",
+            "insurance_plan",
+            "membership_number",
+            "member_type",
+        )
+        if set(data) - set(fields):
+            raise ClinicError("Unexpected insurance field.")
+        values = {k: str(data.get(k, "")).strip() for k in fields}
+        if any(len(v) > 200 for v in values.values()):
+            raise ClinicError("Insurance fields must be 200 characters or fewer.")
+        if values["member_type"] not in (
+            "",
+            "Principal member",
+            "Dependant",
+            "Self-paying",
+        ):
+            raise ClinicError("Choose a listed member type.")
+        if (
+            values["member_type"] != "Self-paying"
+            and any(values.values())
+            and not all(
+                values[k]
+                for k in ("insurance_provider", "membership_number", "member_type")
+            )
+        ):
+            raise ClinicError(
+                "Enter a provider, membership number and member type, or choose Self-paying."
+            )
+        if values["member_type"] == "Self-paying":
+            values.update(
+                insurance_provider="", insurance_plan="", membership_number=""
+            )
+        with self.db.connect(write=True) as con:
+            con.execute(
+                "UPDATE PatientPortal SET "
+                + ",".join(f"{k}=?" for k in fields)
+                + " WHERE user_id=?",
+                list(values.values()) + [self.user["user_id"]],
+            )
+            self._audit(con, "patient_insurance_update", "Patient", pid)
+
+    def portal_doctors(self):
+        self._my_patient_id()
+        with self.db.connect() as con:
+            return [
+                dict(r)
+                for r in con.execute(
+                    "SELECT doctor_id,first_name,last_name FROM Doctor WHERE is_active=1 ORDER BY last_name,first_name"
+                )
+            ]
+
+    def my_appointments(self):
+        pid = self._my_patient_id()
+        with self.db.connect() as con:
+            return [
+                dict(r)
+                for r in con.execute(
+                    """SELECT a.appointment_id,a.doctor_id,a.date,a.start_time,a.status,a.reason,
+                d.first_name||' '||d.last_name AS doctor FROM Appointment a JOIN Doctor d USING(doctor_id)
+                WHERE a.patient_id=? ORDER BY a.date DESC,a.start_time DESC""",
+                    (pid,),
+                )
+            ]
+
+    def my_free_slots(self, doctor_id, day, appointment_id=None):
+        pid = self._my_patient_id()
+        with self.db.connect() as con:
+            if appointment_id:
+                old = con.execute(
+                    "SELECT 1 FROM Appointment WHERE appointment_id=? AND patient_id=? AND status='Booked'",
+                    (appointment_id, pid),
+                ).fetchone()
+                if not old:
+                    raise AccessDenied("Appointment is unavailable for your account.")
+            return self._free_slots(con, doctor_id, day, appointment_id, pid)[0]
+
+    def book_for_me(self, doctor_id, day, start_time, reason="", appointment_id=None):
+        pid = self._my_patient_id()
+        return self.book(pid, doctor_id, day, start_time, reason, appointment_id)
+
+    def cancel_my_appointment(self, appointment_id):
+        pid = self._my_patient_id()
+        with self.db.connect(write=True) as con:
+            row = con.execute(
+                "SELECT * FROM Appointment WHERE appointment_id=? AND patient_id=?",
+                (appointment_id, pid),
+            ).fetchone()
+            if not row:
+                raise AccessDenied("Appointment is unavailable for your account.")
+            if (
+                row["status"] != "Booked"
+                or datetime.fromisoformat(row["date"] + "T" + row["start_time"])
+                <= self.clock()
+            ):
+                raise ClinicError(
+                    "Only a future Booked appointment can be cancelled here. Contact reception for other changes."
+                )
+            con.execute(
+                "UPDATE Appointment SET status='Cancelled',updated_by=?,updated_at=? WHERE appointment_id=?",
+                (self.user["user_id"], stamp(), appointment_id),
+            )
+            self._audit(con, "patient_cancel", "Appointment", appointment_id)
+
+    def my_visit_summaries(self):
+        pid = self._my_patient_id()
+        with self.db.connect() as con:
+            return [
+                dict(r)
+                for r in con.execute(
+                    """SELECT v.visit_date,u.full_name AS clinician,v.diagnosis,v.treatment,v.follow_up_date
+                FROM Visit v JOIN User u ON u.user_id=v.clinician_id WHERE v.patient_id=?
+                ORDER BY v.visit_date DESC,v.visit_id DESC""",
+                    (pid,),
                 )
             ]

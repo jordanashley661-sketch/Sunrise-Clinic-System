@@ -20,6 +20,7 @@ Passphrase for all fictional demo accounts: **SunriseDemo!2026**
 | reception | Patients, booking and check-in |
 | doctor | Assigned consultations and history |
 | nurse | Consultations and history |
+| patient | Own bookings, personal details, medical insurance and visit summaries; choose Patient portal |
 
 ## 3. Try the complete workflow
 
@@ -36,10 +37,14 @@ The simulated date is only for repeatable demonstration. To use an empty databas
 
 ## 4. Evidence and submission
 
-- `evidence/test-results.json`: 55 service/database checks.
-- `evidence/gui-test-results.json`: 30 Tk screen checks.
+- `evidence/test-results.json`: 73 service/database checks (55 original staff cases plus 18 patient-portal cases).
+- `evidence/gui-test-results.json`: 40 Tk screen checks.
 - `evidence/screenshots/`: actual rendered test screens, not design mockups.
 - `source-code.pdf`: complete updated source listing.
 - `VERIFICATION.md`: what was checked and what remains.
 
-The student supplied https://github.com/jordanashley661-sketch/Sunrise-Clinic-System and reported uploading the project. Replace its files with this redesigned build after checking it on your Mac. Confirm assessor access and keep local databases out of GitHub. The accompanying report now records 85 automated checks and the new screen evidence. Review the report, personal details and reflection before exporting it to PDF.
+The student supplied https://github.com/jordanashley661-sketch/Sunrise-Clinic-System and reported uploading the project. Replace its files with this redesigned build after checking it on your Mac. Confirm assessor access and keep local databases out of GitHub. The accompanying report now records 113 automated checks and the new screen evidence. Review the report, personal details and reflection before exporting it to PDF.
+
+## Mac GUI test runner update
+
+A native Tk crash was reported on the Mac. The updated runner removes the create/destroy probe and runs each unchanged GUI test in a separate process, with progress and honest crash/error reporting. All 40 cases and eight runner classification checks passed on Linux. The native Mac retry remains pending. See MAC-GUI-TEST-FIX.md.

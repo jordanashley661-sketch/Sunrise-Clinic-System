@@ -14,11 +14,89 @@ GOLD = "#EAC681"
 FONT = "Arial"
 
 
+class SlimScrollbar(tk.Canvas):
+    """Small arrow-free thumb, independent of the platform's native scrollbars."""
+
+    def __init__(self, parent, orient="vertical", command=None, **kwargs):
+        self.vertical = orient == "vertical"
+        self.command = command
+        self.first, self.last = 0.0, 1.0
+        self.drag = None
+        self.hover = False
+        super().__init__(parent, width=10 if self.vertical else 100,
+                         height=100 if self.vertical else 10,
+                         background=WHITE, highlightthickness=0, bd=0, **kwargs)
+        self.bind("<Configure>", self.draw)
+        self.bind("<Enter>", lambda e: self.highlight(True))
+        self.bind("<Leave>", lambda e: self.highlight(False))
+        self.bind("<Button-1>", self.press)
+        self.bind("<B1-Motion>", self.motion)
+        self.bind("<ButtonRelease-1>", lambda e: setattr(self, "drag", None))
+        self.bind("<MouseWheel>", self.wheel)
+        self.bind("<Button-4>", lambda e: self.command("scroll", -1, "units"))
+        self.bind("<Button-5>", lambda e: self.command("scroll", 1, "units"))
+
+    def set(self, first, last):
+        self.first, self.last = float(first), float(last)
+        self.draw()
+
+    def get(self):
+        return self.first, self.last
+
+    def highlight(self, hover):
+        self.hover = hover
+        self.draw()
+
+    def geometry_values(self):
+        length = max(1, (self.winfo_height() if self.vertical else self.winfo_width()) - 4)
+        thumb = min(length, max(24, length * (self.last - self.first)))
+        travel = max(1, length - thumb)
+        start = 2 + travel * self.first / max(.0001, 1 - (self.last - self.first))
+        return start, thumb, travel
+
+    def draw(self, _event=None):
+        self.delete("all")
+        if self.last - self.first >= .999:
+            return
+        start, thumb, _ = self.geometry_values()
+        color = TEAL if self.hover or self.drag else "#B8CDCA"
+        coords = (3, start, 7, start + thumb) if self.vertical else (start, 3, start + thumb, 7)
+        rounded(self, *coords, radius=2, fill=color, outline="")
+
+    def press(self, event):
+        if self.last - self.first >= .999:
+            return
+        value = event.y if self.vertical else event.x
+        start, thumb, _ = self.geometry_values()
+        if start <= value <= start + thumb:
+            self.drag = (value, self.first)
+        elif self.command:
+            self.command("scroll", -1 if value < start else 1, "pages")
+
+    def motion(self, event):
+        if self.drag and self.command:
+            value = event.y if self.vertical else event.x
+            _, _, travel = self.geometry_values()
+            fraction = self.drag[1] + (value - self.drag[0]) / travel * (1 - (self.last - self.first))
+            self.command("moveto", min(1.0, max(0.0, fraction)))
+
+    def wheel(self, event):
+        if self.command and event.delta:
+            self.command("scroll", -max(1, abs(event.delta) // 120) if event.delta > 0 else max(1, abs(event.delta) // 120), "units")
+        return "break"
+
+
 def configure_theme(root):
     """Apply the same palette on Mac, Windows and Linux through built-in clam."""
     root.configure(background=BG)
     style = ttk.Style(root)
     style.theme_use("clam")
+    style.configure("Day.TButton", padding=(2, 9), font=(FONT, 10), borderwidth=0)
+    style.configure("Selected.Day.TButton", background=TEAL, foreground=WHITE)
+    style.map("Selected.Day.TButton", background=[("active", "#056164")], foreground=[("active", WHITE)])
+    style.configure("Time.TButton", padding=(10, 11), font=(FONT, 10))
+    style.configure("Selected.Time.TButton", background=TEAL, foreground=WHITE)
+    style.map("Selected.Time.TButton", background=[("active", "#056164")], foreground=[("active", WHITE)])
     style.configure(".", font=(FONT, 11), background=WHITE, foreground=INK)
     style.configure("TFrame", background=WHITE)
     style.configure("Workspace.TFrame", background=BG)
@@ -271,7 +349,7 @@ def brand(parent, background=WHITE):
     icon.create_line(11, 20, 29, 20, fill=WHITE, width=2)
     words = tk.Frame(row, bg=background)
     words.pack(side="left")
-    label(words, "sunrise.", 22, bold=True).pack(anchor="w")
+    label(words, "sunrise.", 18, bold=True).pack(anchor="w")
     label(words, "COMMUNITY CLINIC", 7, color=MUTED).pack(anchor="w")
     return row
 

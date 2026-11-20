@@ -1,0 +1,13 @@
+test_complete_success_passes (tests.test_gui_runner.RunnerTests.test_complete_success_passes) ... ok
+test_failure_and_error_are_preserved (tests.test_gui_runner.RunnerTests.test_failure_and_error_are_preserved) ... ok
+test_incomplete_case_is_error (tests.test_gui_runner.RunnerTests.test_incomplete_case_is_error) ... ok
+test_missing_counters_are_error (tests.test_gui_runner.RunnerTests.test_missing_counters_are_error) ... ok
+test_missing_result_is_error (tests.test_gui_runner.RunnerTests.test_missing_result_is_error) ... ok
+test_native_crash_after_passing_assertion_is_error (tests.test_gui_runner.RunnerTests.test_native_crash_after_passing_assertion_is_error) ... ok
+test_skipped_case_is_not_a_pass (tests.test_gui_runner.RunnerTests.test_skipped_case_is_not_a_pass) ... ok
+test_wrong_case_is_error (tests.test_gui_runner.RunnerTests.test_wrong_case_is_error) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.000s
+
+OK

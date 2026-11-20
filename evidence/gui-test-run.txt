@@ -1,250 +1,43 @@
-Isolated GUI test run 2026-11-17T20:47:34+02:00
+Isolated GUI test run 2026-11-17T20:28:53+02:00
 
-[1/30] tests.test_ui.GuiTests.test_G01_login_all_roles_and_navigation: PASS
+[1/40] tests.test_ui.GuiTests.test_G01_login_all_roles_and_navigation: PASS
 test_G01_login_all_roles_and_navigation (tests.test_ui.GuiTests.test_G01_login_all_roles_and_navigation) ... ok
 
 ----------------------------------------------------------------------
-Ran 1 test in 1.173s
+Ran 1 test in 1.691s
 
 OK
 
 
-[2/30] tests.test_ui.GuiTests.test_G02_bad_login_stays_on_login: PASS
+[2/40] tests.test_ui.GuiTests.test_G02_bad_login_stays_on_login: PASS
 test_G02_bad_login_stays_on_login (tests.test_ui.GuiTests.test_G02_bad_login_stays_on_login) ... ok
 
 ----------------------------------------------------------------------
-Ran 1 test in 0.729s
+Ran 1 test in 0.885s
 
 OK
 
 
-[3/30] tests.test_ui.GuiTests.test_G03_register_and_edit_patient: PASS
+[3/40] tests.test_ui.GuiTests.test_G03_register_and_edit_patient: PASS
 test_G03_register_and_edit_patient (tests.test_ui.GuiTests.test_G03_register_and_edit_patient) ... ok
 
 ----------------------------------------------------------------------
-Ran 1 test in 0.964s
+Ran 1 test in 0.985s
 
 OK
 
 
-[4/30] tests.test_ui.GuiTests.test_G04_validation_keeps_form_and_database_safe: PASS
+[4/40] tests.test_ui.GuiTests.test_G04_validation_keeps_form_and_database_safe: PASS
 test_G04_validation_keeps_form_and_database_safe (tests.test_ui.GuiTests.test_G04_validation_keeps_form_and_database_safe) ... ok
 
 ----------------------------------------------------------------------
-Ran 1 test in 0.767s
+Ran 1 test in 0.893s
 
 OK
 
 
-[5/30] tests.test_ui.GuiTests.test_G05_booking_workflow: PASS
+[5/40] tests.test_ui.GuiTests.test_G05_booking_workflow: PASS
 test_G05_booking_workflow (tests.test_ui.GuiTests.test_G05_booking_workflow) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.805s
-
-OK
-
-
-[6/30] tests.test_ui.GuiTests.test_G06_stale_slot_requires_reload: PASS
-test_G06_stale_slot_requires_reload (tests.test_ui.GuiTests.test_G06_stale_slot_requires_reload) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.774s
-
-OK
-
-
-[7/30] tests.test_ui.GuiTests.test_G07_concurrent_conflict_rejected_by_save: PASS
-test_G07_concurrent_conflict_rejected_by_save (tests.test_ui.GuiTests.test_G07_concurrent_conflict_rejected_by_save) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.804s
-
-OK
-
-
-[8/30] tests.test_ui.GuiTests.test_G08_reschedule_keeps_reason_and_updates_time: PASS
-test_G08_reschedule_keeps_reason_and_updates_time (tests.test_ui.GuiTests.test_G08_reschedule_keeps_reason_and_updates_time) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.792s
-
-OK
-
-
-[9/30] tests.test_ui.GuiTests.test_G09_cancel_releases_slot: PASS
-test_G09_cancel_releases_slot (tests.test_ui.GuiTests.test_G09_cancel_releases_slot) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.757s
-
-OK
-
-
-[10/30] tests.test_ui.GuiTests.test_G10_checkin_visit_and_history: PASS
-test_G10_checkin_visit_and_history (tests.test_ui.GuiTests.test_G10_checkin_visit_and_history) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 1.042s
-
-OK
-
-
-[11/30] tests.test_ui.GuiTests.test_G11_invalid_visit_does_not_complete: PASS
-test_G11_invalid_visit_does_not_complete (tests.test_ui.GuiTests.test_G11_invalid_visit_does_not_complete) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.906s
-
-OK
-
-
-[12/30] tests.test_ui.GuiTests.test_G12_reception_has_no_history_or_visit_controls: PASS
-test_G12_reception_has_no_history_or_visit_controls (tests.test_ui.GuiTests.test_G12_reception_has_no_history_or_visit_controls) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.758s
-
-OK
-
-
-[13/30] tests.test_ui.GuiTests.test_G13_admin_screens_render: PASS
-test_G13_admin_screens_render (tests.test_ui.GuiTests.test_G13_admin_screens_render) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.804s
-
-OK
-
-
-[14/30] tests.test_ui.GuiTests.test_G14_schedule_and_leave_forms_save: PASS
-test_G14_schedule_and_leave_forms_save (tests.test_ui.GuiTests.test_G14_schedule_and_leave_forms_save) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.863s
-
-OK
-
-
-[15/30] tests.test_ui.GuiTests.test_G15_create_user_and_doctor: PASS
-test_G15_create_user_and_doctor (tests.test_ui.GuiTests.test_G15_create_user_and_doctor) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.947s
-
-OK
-
-
-[16/30] tests.test_ui.GuiTests.test_G16_report_export_and_backup_restore: PASS
-test_G16_report_export_and_backup_restore (tests.test_ui.GuiTests.test_G16_report_export_and_backup_restore) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.842s
-
-OK
-
-
-[17/30] tests.test_ui.GuiTests.test_G17_expiry_closes_sensitive_modal: PASS
-test_G17_expiry_closes_sensitive_modal (tests.test_ui.GuiTests.test_G17_expiry_closes_sensitive_modal) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.793s
-
-OK
-
-
-[18/30] tests.test_ui.GuiTests.test_G18_role_change_closes_old_clinical_screen: PASS
-test_G18_role_change_closes_old_clinical_screen (tests.test_ui.GuiTests.test_G18_role_change_closes_old_clinical_screen) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.815s
-
-OK
-
-
-[19/30] tests.test_ui.GuiTests.test_G19_restart_persistence: PASS
-test_G19_restart_persistence (tests.test_ui.GuiTests.test_G19_restart_persistence) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.717s
-
-OK
-
-
-[20/30] tests.test_ui.GuiTests.test_G20_invalid_refresh_keeps_previous_list: PASS
-test_G20_invalid_refresh_keeps_previous_list (tests.test_ui.GuiTests.test_G20_invalid_refresh_keeps_previous_list) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.720s
-
-OK
-
-
-[21/30] tests.test_ui.GuiTests.test_G21_form_actions_fit_at_125_percent_scaling: PASS
-test_G21_form_actions_fit_at_125_percent_scaling (tests.test_ui.GuiTests.test_G21_form_actions_fit_at_125_percent_scaling) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.749s
-
-OK
-
-
-[22/30] tests.test_ui.GuiTests.test_G22_first_administrator_setup: PASS
-test_G22_first_administrator_setup (tests.test_ui.GuiTests.test_G22_first_administrator_setup) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.758s
-
-OK
-
-
-[23/30] tests.test_ui.GuiTests.test_G23_no_show_controls: PASS
-test_G23_no_show_controls (tests.test_ui.GuiTests.test_G23_no_show_controls) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.721s
-
-OK
-
-
-[24/30] tests.test_ui.GuiTests.test_G24_manage_account_and_unlock: PASS
-test_G24_manage_account_and_unlock (tests.test_ui.GuiTests.test_G24_manage_account_and_unlock) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.977s
-
-OK
-
-
-[25/30] tests.test_ui.GuiTests.test_G25_edit_doctor_and_remove_leave: PASS
-test_G25_edit_doctor_and_remove_leave (tests.test_ui.GuiTests.test_G25_edit_doctor_and_remove_leave) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.991s
-
-OK
-
-
-[26/30] tests.test_ui.GuiTests.test_G26_summary_export_and_daily_doctor_filter: PASS
-test_G26_summary_export_and_daily_doctor_filter (tests.test_ui.GuiTests.test_G26_summary_export_and_daily_doctor_filter) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.786s
-
-OK
-
-
-[27/30] tests.test_ui.GuiTests.test_G27_nurse_can_record_checked_in_visit: PASS
-test_G27_nurse_can_record_checked_in_visit (tests.test_ui.GuiTests.test_G27_nurse_can_record_checked_in_visit) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.948s
-
-OK
-
-
-[28/30] tests.test_ui.GuiTests.test_G28_unassigned_doctor_cannot_complete_visit: PASS
-test_G28_unassigned_doctor_cannot_complete_visit (tests.test_ui.GuiTests.test_G28_unassigned_doctor_cannot_complete_visit) ... ok
 
 ----------------------------------------------------------------------
 Ran 1 test in 1.076s
@@ -252,23 +45,320 @@ Ran 1 test in 1.076s
 OK
 
 
-[29/30] tests.test_ui.GuiTests.test_G29_password_visibility_toggle: PASS
+[6/40] tests.test_ui.GuiTests.test_G06_stale_slot_requires_reload: PASS
+test_G06_stale_slot_requires_reload (tests.test_ui.GuiTests.test_G06_stale_slot_requires_reload) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.956s
+
+OK
+
+
+[7/40] tests.test_ui.GuiTests.test_G07_concurrent_conflict_rejected_by_save: PASS
+test_G07_concurrent_conflict_rejected_by_save (tests.test_ui.GuiTests.test_G07_concurrent_conflict_rejected_by_save) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.997s
+
+OK
+
+
+[8/40] tests.test_ui.GuiTests.test_G08_reschedule_keeps_reason_and_updates_time: PASS
+test_G08_reschedule_keeps_reason_and_updates_time (tests.test_ui.GuiTests.test_G08_reschedule_keeps_reason_and_updates_time) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.856s
+
+OK
+
+
+[9/40] tests.test_ui.GuiTests.test_G09_cancel_releases_slot: PASS
+test_G09_cancel_releases_slot (tests.test_ui.GuiTests.test_G09_cancel_releases_slot) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.840s
+
+OK
+
+
+[10/40] tests.test_ui.GuiTests.test_G10_checkin_visit_and_history: PASS
+test_G10_checkin_visit_and_history (tests.test_ui.GuiTests.test_G10_checkin_visit_and_history) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.163s
+
+OK
+
+
+[11/40] tests.test_ui.GuiTests.test_G11_invalid_visit_does_not_complete: PASS
+test_G11_invalid_visit_does_not_complete (tests.test_ui.GuiTests.test_G11_invalid_visit_does_not_complete) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.033s
+
+OK
+
+
+[12/40] tests.test_ui.GuiTests.test_G12_reception_has_no_history_or_visit_controls: PASS
+test_G12_reception_has_no_history_or_visit_controls (tests.test_ui.GuiTests.test_G12_reception_has_no_history_or_visit_controls) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.857s
+
+OK
+
+
+[13/40] tests.test_ui.GuiTests.test_G13_admin_screens_render: PASS
+test_G13_admin_screens_render (tests.test_ui.GuiTests.test_G13_admin_screens_render) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.011s
+
+OK
+
+
+[14/40] tests.test_ui.GuiTests.test_G14_schedule_and_leave_forms_save: PASS
+test_G14_schedule_and_leave_forms_save (tests.test_ui.GuiTests.test_G14_schedule_and_leave_forms_save) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.851s
+
+OK
+
+
+[15/40] tests.test_ui.GuiTests.test_G15_create_user_and_doctor: PASS
+test_G15_create_user_and_doctor (tests.test_ui.GuiTests.test_G15_create_user_and_doctor) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.027s
+
+OK
+
+
+[16/40] tests.test_ui.GuiTests.test_G16_report_export_and_backup_restore: PASS
+test_G16_report_export_and_backup_restore (tests.test_ui.GuiTests.test_G16_report_export_and_backup_restore) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.025s
+
+OK
+
+
+[17/40] tests.test_ui.GuiTests.test_G17_expiry_closes_sensitive_modal: PASS
+test_G17_expiry_closes_sensitive_modal (tests.test_ui.GuiTests.test_G17_expiry_closes_sensitive_modal) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.935s
+
+OK
+
+
+[18/40] tests.test_ui.GuiTests.test_G18_role_change_closes_old_clinical_screen: PASS
+test_G18_role_change_closes_old_clinical_screen (tests.test_ui.GuiTests.test_G18_role_change_closes_old_clinical_screen) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.012s
+
+OK
+
+
+[19/40] tests.test_ui.GuiTests.test_G19_restart_persistence: PASS
+test_G19_restart_persistence (tests.test_ui.GuiTests.test_G19_restart_persistence) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.000s
+
+OK
+
+
+[20/40] tests.test_ui.GuiTests.test_G20_invalid_refresh_keeps_previous_list: PASS
+test_G20_invalid_refresh_keeps_previous_list (tests.test_ui.GuiTests.test_G20_invalid_refresh_keeps_previous_list) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.851s
+
+OK
+
+
+[21/40] tests.test_ui.GuiTests.test_G21_form_actions_fit_at_125_percent_scaling: PASS
+test_G21_form_actions_fit_at_125_percent_scaling (tests.test_ui.GuiTests.test_G21_form_actions_fit_at_125_percent_scaling) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.022s
+
+OK
+
+
+[22/40] tests.test_ui.GuiTests.test_G22_first_administrator_setup: PASS
+test_G22_first_administrator_setup (tests.test_ui.GuiTests.test_G22_first_administrator_setup) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.046s
+
+OK
+
+
+[23/40] tests.test_ui.GuiTests.test_G23_no_show_controls: PASS
+test_G23_no_show_controls (tests.test_ui.GuiTests.test_G23_no_show_controls) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.940s
+
+OK
+
+
+[24/40] tests.test_ui.GuiTests.test_G24_manage_account_and_unlock: PASS
+test_G24_manage_account_and_unlock (tests.test_ui.GuiTests.test_G24_manage_account_and_unlock) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.136s
+
+OK
+
+
+[25/40] tests.test_ui.GuiTests.test_G25_edit_doctor_and_remove_leave: PASS
+test_G25_edit_doctor_and_remove_leave (tests.test_ui.GuiTests.test_G25_edit_doctor_and_remove_leave) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.921s
+
+OK
+
+
+[26/40] tests.test_ui.GuiTests.test_G26_summary_export_and_daily_doctor_filter: PASS
+test_G26_summary_export_and_daily_doctor_filter (tests.test_ui.GuiTests.test_G26_summary_export_and_daily_doctor_filter) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.826s
+
+OK
+
+
+[27/40] tests.test_ui.GuiTests.test_G27_nurse_can_record_checked_in_visit: PASS
+test_G27_nurse_can_record_checked_in_visit (tests.test_ui.GuiTests.test_G27_nurse_can_record_checked_in_visit) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.081s
+
+OK
+
+
+[28/40] tests.test_ui.GuiTests.test_G28_unassigned_doctor_cannot_complete_visit: PASS
+test_G28_unassigned_doctor_cannot_complete_visit (tests.test_ui.GuiTests.test_G28_unassigned_doctor_cannot_complete_visit) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.328s
+
+OK
+
+
+[29/40] tests.test_ui.GuiTests.test_G29_password_visibility_toggle: PASS
 test_G29_password_visibility_toggle (tests.test_ui.GuiTests.test_G29_password_visibility_toggle) ... ok
 
 ----------------------------------------------------------------------
-Ran 1 test in 0.570s
+Ran 1 test in 0.788s
 
 OK
 
 
-[30/30] tests.test_ui.GuiTests.test_G30_overview_status_refresh_and_small_window_navigation: PASS
+[30/40] tests.test_ui.GuiTests.test_G30_overview_status_refresh_and_small_window_navigation: PASS
 test_G30_overview_status_refresh_and_small_window_navigation (tests.test_ui.GuiTests.test_G30_overview_status_refresh_and_small_window_navigation) ... ok
 
 ----------------------------------------------------------------------
-Ran 1 test in 0.821s
+Ran 1 test in 0.911s
 
 OK
 
 
-Ran 30 of 30 GUI tests: 30 passed, 0 failures, 0 errors.
+[31/40] tests.test_ui.GuiTests.test_G31_patient_sign_in_and_private_navigation: PASS
+test_G31_patient_sign_in_and_private_navigation (tests.test_ui.GuiTests.test_G31_patient_sign_in_and_private_navigation) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.055s
+
+OK
+
+
+[32/40] tests.test_ui.GuiTests.test_G32_patient_books_and_reception_sees_booking: PASS
+test_G32_patient_books_and_reception_sees_booking (tests.test_ui.GuiTests.test_G32_patient_books_and_reception_sees_booking) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.237s
+
+OK
+
+
+[33/40] tests.test_ui.GuiTests.test_G33_patient_reschedules_and_cancels: PASS
+test_G33_patient_reschedules_and_cancels (tests.test_ui.GuiTests.test_G33_patient_reschedules_and_cancels) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.899s
+
+OK
+
+
+[34/40] tests.test_ui.GuiTests.test_G34_patient_edits_contact_and_medical_insurance: PASS
+test_G34_patient_edits_contact_and_medical_insurance (tests.test_ui.GuiTests.test_G34_patient_edits_contact_and_medical_insurance) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.074s
+
+OK
+
+
+[35/40] tests.test_ui.GuiTests.test_G35_new_patient_registration_and_empty_overview: PASS
+test_G35_new_patient_registration_and_empty_overview (tests.test_ui.GuiTests.test_G35_new_patient_registration_and_empty_overview) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.413s
+
+OK
+
+
+[36/40] tests.test_ui.GuiTests.test_G36_reception_invitation_redeemed_in_patient_signup: PASS
+test_G36_reception_invitation_redeemed_in_patient_signup (tests.test_ui.GuiTests.test_G36_reception_invitation_redeemed_in_patient_signup) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.325s
+
+OK
+
+
+[37/40] tests.test_ui.GuiTests.test_G37_own_visit_summary_excludes_internal_notes: PASS
+test_G37_own_visit_summary_excludes_internal_notes (tests.test_ui.GuiTests.test_G37_own_visit_summary_excludes_internal_notes) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.500s
+
+OK
+
+
+[38/40] tests.test_ui.GuiTests.test_G38_patient_small_window_and_session_expiry: PASS
+test_G38_patient_small_window_and_session_expiry (tests.test_ui.GuiTests.test_G38_patient_small_window_and_session_expiry) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.026s
+
+OK
+
+
+[39/40] tests.test_ui.GuiTests.test_G39_patient_changed_date_clears_loaded_slot: PASS
+test_G39_patient_changed_date_clears_loaded_slot (tests.test_ui.GuiTests.test_G39_patient_changed_date_clears_loaded_slot) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.923s
+
+OK
+
+
+[40/40] tests.test_ui.GuiTests.test_G40_patient_and_staff_login_modes_are_distinct: PASS
+test_G40_patient_and_staff_login_modes_are_distinct (tests.test_ui.GuiTests.test_G40_patient_and_staff_login_modes_are_distinct) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.024s
+
+OK
+
+
+Ran 40 of 40 GUI tests: 40 passed, 0 failures, 0 errors.
 OK - ALL GUI TESTS PASSED

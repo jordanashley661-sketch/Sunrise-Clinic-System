@@ -49,6 +49,7 @@ class GuiTests(unittest.TestCase):
             "SIMULATED CLOCK: 2030-01-07 08:00 — automated test fixture"
         )
         self.root = tk.Tk()
+        self.initial_scaling = float(self.root.tk.call("tk", "scaling"))
         self.callbacks = []
         self.root.report_callback_exception = lambda *exc: self.callbacks.append(
             str(exc[1])
@@ -73,6 +74,7 @@ class GuiTests(unittest.TestCase):
     def tearDown(self):
         for item in self.root.tk.call("after", "info"):
             self.root.after_cancel(item)
+        self.root.tk.call("tk", "scaling", self.initial_scaling)
         self.root.destroy()
         for stub in reversed(self.patches):
             stub.stop()
@@ -90,6 +92,11 @@ class GuiTests(unittest.TestCase):
         self.root.update()
 
     def field(self, label, value=None, parent=None):
+        if parent is None:
+            dialogs = [
+                w for w in self.root.winfo_children() if isinstance(w, tk.Toplevel)
+            ]
+            parent = dialogs[-1] if dialogs else self.root
         for widget in descendants(parent or self.root):
             if getattr(widget, "_field_label", None) == label:
                 if value is not None:
@@ -588,3 +595,264 @@ class GuiTests(unittest.TestCase):
         self.assertTrue(self.field("First name").winfo_ismapped())
         self.click("Close")
         self.assertEqual(self.s.appointments(DAY)[0]["status"], "Checked-in")
+
+    def patient_login(self):
+        if self.s.user:
+            self.click("Log out")
+        self.click("Patient portal")
+        self.field("Username", "patient")
+        self.field("Passphrase (15–128 characters)", DEMO_PASSWORD)
+        self.click("Log in")
+        self.assertEqual(self.s.user["role"], "Patient")
+
+    def staff_login(self, username):
+        if self.s.user:
+            self.click("Log out")
+        self.click("Staff sign in")
+        self.login(username)
+
+    def test_G31_patient_sign_in_and_private_navigation(self):
+        self.click("Patient portal")
+        self.screenshot("11-patient-login")
+        self.patient_login()
+        self.assertIn("My appointments", self.app.nav_buttons)
+        self.assertNotIn("Patients", self.app.nav_buttons)
+        self.assertNotIn("Users", self.app.nav_buttons)
+        self.screenshot("12-patient-overview")
+
+    def test_G32_patient_books_and_reception_sees_booking(self):
+        self.patient_login()
+        self.click("My appointments")
+        self.click("Book an appointment")
+        self.dialog().booking_picker.choose_time("10:00")
+        self.field("Administrative booking reason", "Routine appointment")
+        self.screenshot("13-patient-booking", self.dialog())
+        self.click("Confirm my booking")
+        self.assertEqual(len(self.s.my_appointments()), 2)
+        self.screenshot("14-patient-appointments")
+        self.staff_login("reception")
+        self.assertTrue(
+            any(a["start_time"] == "10:00" for a in self.s.appointments(DAY))
+        )
+
+    def test_G33_patient_reschedules_and_cancels(self):
+        self.patient_login()
+        self.click("My appointments")
+        self.select(1)
+        self.click("Reschedule my appointment")
+        self.dialog().booking_picker.choose_day(datetime(2030, 1, 8).date())
+        self.dialog().booking_picker.choose_time("10:00")
+        self.click("Confirm my booking")
+        self.assertEqual(self.s.my_appointments()[0]["date"], "2030-01-08")
+        self.select(1)
+        self.click("Cancel my appointment")
+        self.assertEqual(self.s.my_appointments()[0]["status"], "Cancelled")
+
+    def test_G34_patient_edits_contact_and_medical_insurance(self):
+        self.patient_login()
+        self.click("Personal details")
+        identity_text = " ".join(
+            w.cget("text")
+            for w in descendants(self.app.content)
+            if isinstance(w, ttk.Label)
+        )
+        self.assertIn("DEMO000001", identity_text)
+        self.field("Phone (10 digits)", "0100000008")
+        self.field("Address (optional)", "Updated patient address")
+        self.click("Save my details")
+        self.assertEqual(self.s.my_profile()["address"], "Updated patient address")
+        self.click("Medical insurance")
+        self.field("Medical aid provider", "Example Health")
+        self.field("Membership number", "1234564821")
+        self.field("Member type", "Principal member")
+        self.click("Save medical insurance")
+        self.assertEqual(self.s.my_insurance()["membership_number"], "1234564821")
+        self.screenshot("15-patient-insurance")
+        self.click("My overview")
+        labels = [
+            w.cget("text")
+            for w in descendants(self.app.content)
+            if isinstance(w, tk.Label)
+        ]
+        self.assertTrue(any("4821" in t and "123456" not in t for t in labels))
+
+    def test_G35_new_patient_registration_and_empty_overview(self):
+        from tests.test_patient_portal import profile
+
+        self.click("Patient portal")
+        self.click("Create a patient account")
+        self.field("Username", "lerato")
+        self.field("Passphrase (15–128 characters)", DEMO_PASSWORD)
+        self.field("Confirm password", DEMO_PASSWORD)
+        notebook = next(
+            w for w in descendants(self.dialog()) if isinstance(w, ttk.Notebook)
+        )
+        notebook.select(1)
+        self.root.update()
+        data = profile()
+        for key, field in [
+            ("first_name", "First name"),
+            ("last_name", "Surname"),
+            ("id_number", "ID or passport number"),
+            ("date_of_birth", "Date of birth (YYYY-MM-DD)"),
+            ("gender", "Gender (optional)"),
+            ("phone", "Phone (10 digits)"),
+            ("email", "Email (optional)"),
+            ("address", "Address (optional)"),
+            ("next_of_kin_name", "Next of kin name"),
+            ("next_of_kin_phone", "Next of kin phone"),
+        ]:
+            self.field(field, data[key])
+        self.screenshot("16-patient-registration", self.dialog())
+        self.click("Create patient account")
+        self.assertEqual(self.s.my_profile()["first_name"], "Lerato")
+        self.assertEqual(self.s.my_appointments(), [])
+        self.click("Medical insurance")
+        for field, value in [
+            ("Medical aid provider", "Example Health"),
+            ("Plan (optional)", "Sample medical aid plan"),
+            ("Membership number", "1234564821"),
+            ("Member type", "Principal member"),
+        ]:
+            self.field(field, value)
+        self.click("Save medical insurance")
+        self.click("My overview")
+        self.root.geometry("1363x936")
+        self.root.update()
+        self.screenshot("17-patient-empty-overview")
+
+    def test_G36_reception_invitation_redeemed_in_patient_signup(self):
+        from tests.test_patient_portal import profile
+
+        self.login("reception")
+        pid = self.s.save_patient(profile())
+        self.click("Patients")
+        # Refresh lists after creating this fixture through the real service.
+        self.click("Search")
+        self.select(pid)
+        self.click("View or update")
+        self.click("Create portal invitation")
+        windows = [w for w in self.root.winfo_children() if isinstance(w, tk.Toplevel)]
+        invitation_window = next(
+            w for w in windows if w.title() == "Patient portal invitation"
+        )
+        token = next(
+            w.get() for w in descendants(invitation_window) if isinstance(w, ttk.Entry)
+        )
+        self.assertGreater(len(token), 20)
+        self.click("Close invitation")
+        self.click("Close")
+        self.click("Log out")
+        self.click("Patient portal")
+        self.click("Create a patient account")
+        self.field("Username", "invited")
+        self.field("Passphrase (15–128 characters)", DEMO_PASSWORD)
+        self.field("Confirm password", DEMO_PASSWORD)
+        self.field("Clinic invitation code (optional)", token)
+        self.click("Create patient account")
+        self.assertEqual(self.s.my_profile()["patient_id"], pid)
+
+    def test_G37_own_visit_summary_excludes_internal_notes(self):
+        self.login("reception")
+        self.s.set_status(1, "Checked-in")
+        self.staff_login("doctor")
+        self.s.record_visit(
+            1,
+            {
+                "complaint": "Fictional complaint",
+                "notes": "Private staff note",
+                "diagnosis": "Example diagnosis",
+                "treatment": "Example treatment",
+            },
+        )
+        self.patient_login()
+        self.click("Visit summaries")
+        text = next(
+            w for w in descendants(self.app.content) if isinstance(w, tk.Text)
+        ).get("1.0", "end")
+        self.assertIn("Example diagnosis", text)
+        self.assertNotIn("Private staff note", text)
+        self.screenshot("18-patient-visit-summaries")
+
+    def test_G38_patient_small_window_and_session_expiry(self):
+        self.root.geometry("1000x720")
+        self.root.update()
+        self.click("Patient portal")
+        button = next(
+            w
+            for w in descendants(self.root)
+            if isinstance(w, ttk.Button) and w.cget("text") == "Log in"
+        )
+        self.assertGreaterEqual(button.winfo_rooty(), self.root.winfo_rooty())
+        self.assertLessEqual(
+            button.winfo_rooty() + button.winfo_height(),
+            self.root.winfo_rooty() + self.root.winfo_height(),
+        )
+        self.patient_login()
+        self.click("Personal details")
+        self.assertTrue(self.field("Phone (10 digits)").winfo_ismapped())
+        self.s.last_activity = time.monotonic() - 901
+        self.click("Save my details")
+        self.assertIsNone(self.s.user)
+        self.assertFalse(
+            hasattr(self.app, "content") and self.app.content.winfo_exists()
+        )
+
+    def test_G39_patient_changed_date_clears_loaded_slot(self):
+        self.patient_login()
+        self.click("My appointments")
+        self.click("Book an appointment")
+        picker = self.dialog().booking_picker
+        self.assertEqual(picker.selected_time, "")
+        picker.time_buttons["10:00"].invoke()
+        self.assertEqual(picker.selected_time, "10:00")
+        picker.day_buttons["2030-01-08"].invoke()
+        self.assertEqual(picker.day.isoformat(), "2030-01-08")
+        self.assertEqual(picker.selected_time, "")
+        confirm = next(w for w in descendants(self.dialog())
+                       if isinstance(w, ttk.Button) and w.cget("text") == "Confirm my booking")
+        self.assertTrue(confirm.instate(["disabled"]))
+        self.assertEqual(len(self.s.my_appointments()), 1)
+        self.click("Close")
+
+    def test_G42_calendar_disables_unavailable_days_and_rejects_invalid_time(self):
+        self.patient_login()
+        self.click("My appointments")
+        self.click("Book an appointment")
+        picker = self.dialog().booking_picker
+        self.assertTrue(picker.day_buttons["2030-01-06"].instate(["disabled"]))
+        self.assertNotIn("09:00", picker.time_buttons)  # Existing demo booking.
+        picker.choose_time("03:00")
+        self.assertEqual(picker.selected_time, "")
+        self.assertIn("10:00", picker.time_buttons)
+        picker.move_month(1)
+        self.assertEqual(picker.month.month, 2)
+        picker.move_month(-1)
+        self.assertEqual(picker.month.month, 1)
+        self.assertEqual(len(self.s.my_appointments()), 1)
+        self.click("Close")
+
+    def test_G40_patient_and_staff_login_modes_are_distinct(self):
+        self.field("Username", "patient")
+        self.field("Passphrase (15–128 characters)", DEMO_PASSWORD)
+        self.click("Log in")
+        self.assertIsNone(self.s.user)
+        self.click("Patient portal")
+        self.field("Username", "reception")
+        self.field("Passphrase (15–128 characters)", DEMO_PASSWORD)
+        self.click("Log in")
+        self.assertIsNone(self.s.user)
+
+    def test_G43_patient_future_booking_appears_on_staff_home(self):
+        from sunrise.weekly_calendar import WeeklyCalendar
+        self.patient_login()
+        aid = self.s.book_for_me(1, "2030-01-21", "10:00", "Routine check")
+        for username in ("admin", "doctor"):
+            self.staff_login(username)
+            widget = next(w for w in descendants(self.app.content) if isinstance(w, WeeklyCalendar))
+            # The existing demo booking is earlier; jump directly to the target week.
+            widget.week = datetime(2030, 1, 21).date()
+            widget.refresh()
+            self.root.update()
+            self.assertIn(aid, {r["appointment_id"] for r in widget.rows})
+            self.assertIn("appointment-" + str(aid), widget.event_cards)

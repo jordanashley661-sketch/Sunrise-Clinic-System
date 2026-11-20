@@ -1,18 +1,18 @@
 {
-  "run_at": "2026-11-17T20:47:34+02:00",
-  "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
-  "python": "3.15.2",
+  "run_at": "2026-11-17T20:28:53+02:00",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
   "tk": "9.0",
-  "tests_expected": 30,
-  "tests_run": 30,
-  "passed": 30,
+  "tests_expected": 40,
+  "tests_run": 40,
+  "passed": 40,
   "failures": 0,
   "errors": 0,
   "status": "PASS",
   "fixture_clock": "2030-01-07 08:00 (simulated; not real clinic data)",
   "method": "One subprocess per real Tk case; real SQLite; button.invoke; message/file dialogs intercepted",
   "limits": "Records this machine only; not staff acceptance, physical input or full accessibility testing",
-  "screenshots": false,
+  "screenshots": true,
   "cases": [
     {
       "test": "tests.test_ui.GuiTests.test_G01_login_all_roles_and_navigation",
@@ -132,6 +132,46 @@
     },
     {
       "test": "tests.test_ui.GuiTests.test_G30_overview_status_refresh_and_small_window_navigation",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G31_patient_sign_in_and_private_navigation",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G32_patient_books_and_reception_sees_booking",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G33_patient_reschedules_and_cancels",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G34_patient_edits_contact_and_medical_insurance",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G35_new_patient_registration_and_empty_overview",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G36_reception_invitation_redeemed_in_patient_signup",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G37_own_visit_summary_excludes_internal_notes",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G38_patient_small_window_and_session_expiry",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G39_patient_changed_date_clears_loaded_slot",
+      "result": "PASS"
+    },
+    {
+      "test": "tests.test_ui.GuiTests.test_G40_patient_and_staff_login_modes_are_distinct",
       "result": "PASS"
     }
   ],

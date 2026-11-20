@@ -6,7 +6,7 @@ Offline appointment and patient records coursework prototype for Ashley Jordan F
 
 ## Updated assessment build - 17 November 2026
 
-Start with **START-HERE.md**. This build includes 55 service/database checks and 30 real Tk widget checks, saved results and screenshots. See **VERIFICATION.md** for the actual results and limits.
+Start with **START-HERE.md**. This build includes 73 service/database checks and 40 real Tk widget checks, saved results and screenshots. See **VERIFICATION.md** for the actual results and limits.
 
 For a repeatable assessment walkthrough, use `run-assessment-demo.bat` (Windows), `run-assessment-demo.command` (Mac), or:
 
@@ -18,9 +18,13 @@ This visibly labelled demonstration uses a **simulated 7 January 2030, 08:00 app
 
 ## Teal interface update
 
-The 17 November build adapts the supplied Sunrise mockups to the existing staff system. It adds a split login, sidebar navigation, mint welcome banner, live appointment counts and role-specific quick actions. `sunrise/theme.py` holds the teal palette, Arial typography, rounded cards and vector clinic illustration. No new runtime dependency is required. The reference patient dashboard is a visual guide; patient self-service and medical-insurance storage are outside this staff prototype.
+The 17 November build adapts the supplied Sunrise mockups to the existing staff system. It adds a split login, sidebar navigation, mint welcome banner, live appointment counts and role-specific quick actions. `sunrise/theme.py` holds the teal palette, Arial typography, rounded cards and vector clinic illustration. No new runtime dependency is required. The same visual theme now also supports the patient self-service extension described in PATIENT-PORTAL.md.
 
-Extract the new project as a complete folder. Its database schema and normal data directory are unchanged, so the same demonstration data remains available. Do not delete the existing database to change the appearance. Check the redesigned screens on your Mac before replacing the submitted GitHub files.
+Extract the new project as a complete folder. The normal data directory is unchanged. The app preserves the demonstration data while upgrading the schema to version 2, with a one-time pre-upgrade backup. Do not delete the existing database to change the appearance. Check the redesigned screens on your Mac before replacing the submitted GitHub files.
+
+## Patient self-service
+
+Choose **Patient portal**. Demo username **patient**, password **SunriseDemo!2026**. Patients can also create their own account or redeem a clinic-issued invitation for an existing record. Read **PATIENT-PORTAL.md** for the complete walkthrough and database upgrade details. The portal is local to this offline desktop app; it is not publicly accessible from phones or home computers.
 
 ## Start on Windows
 
@@ -137,3 +141,7 @@ ID validation checks format only; it does not verify an SA ID checksum, citizens
 ## Academic use and acknowledgement
 
 ChatGPT assisted with the source, tests, technical diagrams and report draft. Read, run and understand the code; adapt it to your institution's rules and your own work. Add actual lecturer feedback if subsequently received. Replace the marked personal-reflection and submission fields truthfully. Do not claim to have independently written all generated code or completed tests that remain pending.
+
+## Mac GUI test runner update
+
+A native Tk crash was reported on the Mac. The updated runner removes the create/destroy probe and runs each unchanged GUI test in a separate process, with progress and honest crash/error reporting. All 40 cases and eight runner classification checks passed on Linux. The native Mac retry remains pending. See MAC-GUI-TEST-FIX.md.

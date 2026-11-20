@@ -1,4 +1,4 @@
-"""SQLite connection factory and version 1 schema."""
+"""SQLite connection factory and version 2 schema and transactional version 1 upgrade."""
 
 from contextlib import contextmanager
 from pathlib import Path
@@ -8,7 +8,7 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS User (
  user_id INTEGER PRIMARY KEY, username TEXT NOT NULL COLLATE NOCASE UNIQUE,
  password_hash TEXT NOT NULL, full_name TEXT NOT NULL,
- role TEXT NOT NULL CHECK(role IN ('Receptionist','Doctor','Nurse','Admin')),
+ role TEXT NOT NULL CHECK(role IN ('Receptionist','Doctor','Nurse','Admin','Patient')),
  is_active INTEGER NOT NULL DEFAULT 1 CHECK(is_active IN (0,1)),
  failed_attempts INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL
 );
@@ -64,7 +64,18 @@ CREATE TABLE IF NOT EXISTS AuditLog (
  audit_id INTEGER PRIMARY KEY, user_id INTEGER REFERENCES User(user_id), action TEXT NOT NULL,
  entity TEXT NOT NULL, entity_id INTEGER, timestamp TEXT NOT NULL
 );
-PRAGMA user_version=1;
+CREATE TABLE IF NOT EXISTS PatientPortal (
+ user_id INTEGER PRIMARY KEY REFERENCES User(user_id),
+ patient_id INTEGER NOT NULL UNIQUE REFERENCES Patient(patient_id),
+ insurance_provider TEXT NOT NULL DEFAULT '', insurance_plan TEXT NOT NULL DEFAULT '',
+ membership_number TEXT NOT NULL DEFAULT '', member_type TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS PatientInvitation (
+ token_hash TEXT PRIMARY KEY, patient_id INTEGER NOT NULL REFERENCES Patient(patient_id),
+ created_by INTEGER NOT NULL REFERENCES User(user_id), expires_at TEXT NOT NULL,
+ used_at TEXT
+);
+PRAGMA user_version=2;
 """
 
 
@@ -76,10 +87,51 @@ class Database:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.connect() as con:
             version = con.execute("PRAGMA user_version").fetchone()[0]
-            if version > 1:
+            if version > 2:
                 raise ValueError(
                     "Database version is newer than this app. Do not downgrade it."
                 )
+            if version == 1:
+                snapshot = self.path.with_name(
+                    self.path.stem + ".before-v2" + self.path.suffix
+                )
+                if not snapshot.exists():
+                    destination = sqlite3.connect(str(snapshot))
+                    try:
+                        con.backup(destination)
+                        if (
+                            destination.execute("PRAGMA integrity_check").fetchone()[0]
+                            != "ok"
+                        ):
+                            raise ValueError(
+                                "Pre-upgrade backup failed its integrity check."
+                            )
+                    finally:
+                        destination.close()
+                # Keep references to User intact: create/copy/drop/rename within one
+                # transaction. FK checks are restored and validated before commit.
+                con.execute("PRAGMA foreign_keys=OFF")
+                try:
+                    con.execute("BEGIN IMMEDIATE")
+                    user_sql = SCHEMA.split("CREATE TABLE IF NOT EXISTS Patient (")[0]
+                    user_sql = user_sql.replace(
+                        "CREATE TABLE IF NOT EXISTS User", "CREATE TABLE User_v2"
+                    )
+                    con.execute(user_sql)
+                    con.execute("INSERT INTO User_v2 SELECT * FROM User")
+                    con.execute("DROP TABLE User")
+                    con.execute("ALTER TABLE User_v2 RENAME TO User")
+                    if con.execute("PRAGMA foreign_key_check").fetchone():
+                        raise ValueError(
+                            "Database upgrade failed its relationship check."
+                        )
+                    con.execute("PRAGMA user_version=2")
+                    con.commit()
+                except Exception:
+                    con.rollback()
+                    raise
+                finally:
+                    con.execute("PRAGMA foreign_keys=ON")
             con.executescript(SCHEMA)
 
     @contextmanager

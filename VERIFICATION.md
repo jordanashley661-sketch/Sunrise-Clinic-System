@@ -2,18 +2,18 @@
 
 ## Actual outcome
 
-- Service/database suite: **55 tests, 0 failures, 0 errors**.
-- Real Tk widget suite: **30 tests, 0 failures, 0 errors**.
-- Total: **85 passed automated checks**. Separate native entry-point startup checks are in evidence/startup-checks.json.
+- Service/database suite: **73 tests, 0 failures, 0 errors**.
+- Real Tk widget suite: **40 tests, 0 failures, 0 errors**.
+- Total: **113 passed automated checks**. Separate native entry-point startup checks are in evidence/startup-checks.json.
 - Python 3.12.14; SQLite 3.53.1; Tk 9.0; Linux test environment.
 - Black formatting check and Ruff E4/E7/E9/F checks passed. These selected checks are not a complete PEP 8 audit.
-- Combined load in one database: **50,200 patients, 200 appointments, 10 doctors**. Patient search 0.009643s; slot lookup 0.000737s. Both below the two-second target in this environment.
+- Combined load in one database: **50,200 patients, 200 appointments, 10 doctors**. Patient search 0.010666s; slot lookup 0.000902s. Both below the two-second target in this environment.
 
 ## Visual update on 17 November
 
-The supplied mockups were adapted to the existing staff app: teal split login, sidebar, rounded panels, real daily counts, account identity and role-specific quick actions. No service or database rules changed. G29 checks password visibility without changing its value. G30 checks the refreshed dashboard status, navigation and a registration action at a 1000 x 720 window size. The original 28 GUI workflows still pass.
+The supplied mockups were adapted to the existing staff app: teal split login, sidebar, rounded panels, real daily counts, account identity and role-specific quick actions. The staff rules remain; version 2 adds patient ownership checks, invitation linking and local self-service. G29 checks password visibility without changing its value. G30 checks the refreshed dashboard status, navigation and a registration action at a 1000 x 720 window size. The original 28 GUI workflows still pass.
 
-The student reported core Mac workflows on 16 November using the previous appearance. Those outcomes are not presented as native-Mac approval of this redesign. Test the new appearance on the Mac before submitting it. The patient-portal mockup supplies visual direction only; patient accounts and insurance functions have not been added.
+The student reported core Mac workflows on 16 November using the previous appearance. Those outcomes are not presented as native-Mac approval of this redesign. Test the new appearance on the Mac before submitting it. Patient accounts, own bookings, contacts, insurance and visit summaries have now been added as the local extension described in PATIENT-PORTAL.md.
 
 ## What changed
 
@@ -27,6 +27,10 @@ The student reported core Mac workflows on 16 November using the previous appear
 8. Login and patient search accept Enter as well as the button.
 9. Added a visibly labelled, separate frozen-date demonstration, permitting a complete same-day consultation walkthrough without changing the operating-system clock.
 10. Reformatted the source for readability, removed unused imports, and refreshed the source-code PDF.
+
+## Patient extension evidence
+
+All 18 P01-P18 service tests and G31-G40 patient screen tests passed. The test runner now includes 73 service cases (T01-T55 plus P01-P18) and 40 GUI cases. Migration preserves version 1 data and writes a pre-upgrade backup; ownership tests reject cross-patient access, and concurrency tests permit only one of two bookings for a shared slot. See PATIENT-PORTAL.md for exact behaviour and limits.
 
 ## Core functions and evidence
 
@@ -77,3 +81,7 @@ Initial GUI test failures were test-driver mistakes: a label mismatch and an amb
 Run `python3 run_tests.py` for the service suite. On a desktop, run `python3 run_gui_tests.py`. Optional screenshot capture: install Pillow as a development dependency and run `python3 run_gui_tests.py --screenshots`. No third-party packages are required by the normal app. Black and Ruff are optional development tools, not runtime dependencies.
 
 Authoritative evidence: evidence/test-run.txt, evidence/test-results.json, evidence/gui-test-run.txt, evidence/gui-test-results.json, evidence/startup-checks.json and evidence/screenshots/.
+
+## Mac GUI test runner update
+
+A native Tk crash was reported on the Mac. The updated runner removes the create/destroy probe and runs each unchanged GUI test in a separate process, with progress and honest crash/error reporting. All 40 cases and eight runner classification checks passed on Linux. The native Mac retry remains pending. See MAC-GUI-TEST-FIX.md.

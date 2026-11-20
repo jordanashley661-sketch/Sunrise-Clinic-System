@@ -1,0 +1,77 @@
+test_G01_login_all_roles_and_navigation (tests.test_ui.GuiTests.test_G01_login_all_roles_and_navigation) ... ok
+test_G02_bad_login_stays_on_login (tests.test_ui.GuiTests.test_G02_bad_login_stays_on_login) ... ok
+test_G03_register_and_edit_patient (tests.test_ui.GuiTests.test_G03_register_and_edit_patient) ... ok
+test_G04_validation_keeps_form_and_database_safe (tests.test_ui.GuiTests.test_G04_validation_keeps_form_and_database_safe) ... ok
+test_G05_booking_workflow (tests.test_ui.GuiTests.test_G05_booking_workflow) ... ok
+test_G06_stale_slot_requires_reload (tests.test_ui.GuiTests.test_G06_stale_slot_requires_reload) ... ok
+test_G07_concurrent_conflict_rejected_by_save (tests.test_ui.GuiTests.test_G07_concurrent_conflict_rejected_by_save) ... ok
+test_G08_reschedule_keeps_reason_and_updates_time (tests.test_ui.GuiTests.test_G08_reschedule_keeps_reason_and_updates_time) ... ok
+test_G09_cancel_releases_slot (tests.test_ui.GuiTests.test_G09_cancel_releases_slot) ... ok
+test_G10_checkin_visit_and_history (tests.test_ui.GuiTests.test_G10_checkin_visit_and_history) ... ok
+test_G11_invalid_visit_does_not_complete (tests.test_ui.GuiTests.test_G11_invalid_visit_does_not_complete) ... ok
+test_G12_reception_has_no_history_or_visit_controls (tests.test_ui.GuiTests.test_G12_reception_has_no_history_or_visit_controls) ... ok
+test_G13_admin_screens_render (tests.test_ui.GuiTests.test_G13_admin_screens_render) ... ok
+test_G14_schedule_and_leave_forms_save (tests.test_ui.GuiTests.test_G14_schedule_and_leave_forms_save) ... ok
+test_G15_create_user_and_doctor (tests.test_ui.GuiTests.test_G15_create_user_and_doctor) ... ok
+test_G16_report_export_and_backup_restore (tests.test_ui.GuiTests.test_G16_report_export_and_backup_restore) ... ok
+test_G17_expiry_closes_sensitive_modal (tests.test_ui.GuiTests.test_G17_expiry_closes_sensitive_modal) ... ok
+test_G18_role_change_closes_old_clinical_screen (tests.test_ui.GuiTests.test_G18_role_change_closes_old_clinical_screen) ... ok
+test_G19_restart_persistence (tests.test_ui.GuiTests.test_G19_restart_persistence) ... ok
+test_G20_invalid_refresh_keeps_previous_list (tests.test_ui.GuiTests.test_G20_invalid_refresh_keeps_previous_list) ... ok
+test_G21_form_actions_fit_at_125_percent_scaling (tests.test_ui.GuiTests.test_G21_form_actions_fit_at_125_percent_scaling) ... ok
+test_G22_first_administrator_setup (tests.test_ui.GuiTests.test_G22_first_administrator_setup) ... ok
+test_G23_no_show_controls (tests.test_ui.GuiTests.test_G23_no_show_controls) ... ok
+test_G24_manage_account_and_unlock (tests.test_ui.GuiTests.test_G24_manage_account_and_unlock) ... ok
+test_G25_edit_doctor_and_remove_leave (tests.test_ui.GuiTests.test_G25_edit_doctor_and_remove_leave) ... ok
+test_G26_summary_export_and_daily_doctor_filter (tests.test_ui.GuiTests.test_G26_summary_export_and_daily_doctor_filter) ... ok
+test_G27_nurse_can_record_checked_in_visit (tests.test_ui.GuiTests.test_G27_nurse_can_record_checked_in_visit) ... ok
+test_G28_unassigned_doctor_cannot_complete_visit (tests.test_ui.GuiTests.test_G28_unassigned_doctor_cannot_complete_visit) ... ok
+test_G29_password_visibility_toggle (tests.test_ui.GuiTests.test_G29_password_visibility_toggle) ... ok
+test_G30_overview_status_refresh_and_small_window_navigation (tests.test_ui.GuiTests.test_G30_overview_status_refresh_and_small_window_navigation) ... ok
+test_G31_patient_sign_in_and_private_navigation (tests.test_ui.GuiTests.test_G31_patient_sign_in_and_private_navigation) ... ok
+test_G32_patient_books_and_reception_sees_booking (tests.test_ui.GuiTests.test_G32_patient_books_and_reception_sees_booking) ... ok
+test_G33_patient_reschedules_and_cancels (tests.test_ui.GuiTests.test_G33_patient_reschedules_and_cancels) ... ok
+test_G34_patient_edits_contact_and_medical_insurance (tests.test_ui.GuiTests.test_G34_patient_edits_contact_and_medical_insurance) ... ok
+test_G35_new_patient_registration_and_empty_overview (tests.test_ui.GuiTests.test_G35_new_patient_registration_and_empty_overview) ... ERROR
+test_G36_reception_invitation_redeemed_in_patient_signup (tests.test_ui.GuiTests.test_G36_reception_invitation_redeemed_in_patient_signup) ... ERROR
+test_G37_own_visit_summary_excludes_internal_notes (tests.test_ui.GuiTests.test_G37_own_visit_summary_excludes_internal_notes) ... ok
+test_G38_patient_small_window_and_session_expiry (tests.test_ui.GuiTests.test_G38_patient_small_window_and_session_expiry) ... ok
+test_G39_patient_changed_date_clears_loaded_slot (tests.test_ui.GuiTests.test_G39_patient_changed_date_clears_loaded_slot) ... ok
+test_G40_patient_and_staff_login_modes_are_distinct (tests.test_ui.GuiTests.test_G40_patient_and_staff_login_modes_are_distinct) ... ok
+
+======================================================================
+ERROR: test_G35_new_patient_registration_and_empty_overview (tests.test_ui.GuiTests.test_G35_new_patient_registration_and_empty_overview)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a89cc24f1d2e/patient-portal/project/SunriseClinic/tests/test_ui.py", line 697, in test_G35_new_patient_registration_and_empty_overview
+    self.assertEqual(self.s.my_profile()["first_name"], "Lerato")
+                     ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/a89cc24f1d2e/patient-portal/project/SunriseClinic/sunrise/services.py", line 1001, in my_profile
+    pid = self._my_patient_id()
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/a89cc24f1d2e/patient-portal/project/SunriseClinic/sunrise/services.py", line 884, in _my_patient_id
+    self._require("Patient")
+  File "/workspace/scratch/a89cc24f1d2e/patient-portal/project/SunriseClinic/sunrise/services.py", line 92, in _require
+    raise AccessDenied("Please log in first.")
+sunrise.services.AccessDenied: Please log in first.
+
+======================================================================
+ERROR: test_G36_reception_invitation_redeemed_in_patient_signup (tests.test_ui.GuiTests.test_G36_reception_invitation_redeemed_in_patient_signup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a89cc24f1d2e/patient-portal/project/SunriseClinic/tests/test_ui.py", line 742, in test_G36_reception_invitation_redeemed_in_patient_signup
+    self.assertEqual(self.s.my_profile()["patient_id"], pid)
+                     ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/a89cc24f1d2e/patient-portal/project/SunriseClinic/sunrise/services.py", line 1001, in my_profile
+    pid = self._my_patient_id()
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/a89cc24f1d2e/patient-portal/project/SunriseClinic/sunrise/services.py", line 884, in _my_patient_id
+    self._require("Patient")
+  File "/workspace/scratch/a89cc24f1d2e/patient-portal/project/SunriseClinic/sunrise/services.py", line 92, in _require
+    raise AccessDenied("Please log in first.")
+sunrise.services.AccessDenied: Please log in first.
+
+----------------------------------------------------------------------
+Ran 40 tests in 20.434s
+
+FAILED (errors=2)
